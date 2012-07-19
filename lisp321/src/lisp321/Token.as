@@ -57,7 +57,7 @@ package lisp321
 		 * @param beginIndex 토큰의 시작 인덱스입니다.
 		 * @param endIndex 토큰의 끝 인덱스입니다.
 		 */
-		public function Token( code:String, beginIndex:int, endIndex:int )
+		public function Token( code:String, beginIndex:int = 0, endIndex:int = -1 )
 		{
 			this.code = code;
 			this.beginIndex = beginIndex;

@@ -7,5 +7,15 @@ package lisp321
 		{
 		}
 		
+		public function parse( tokens:Vector.<Token> ):Array
+		{
+			var tree:Array = [];
+			for each( var token:Token in tokens )
+			{
+				//
+			}
+			return tree;
+		}
+		
 	}
 }
