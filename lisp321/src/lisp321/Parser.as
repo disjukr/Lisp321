@@ -7,7 +7,7 @@ package lisp321
 		{
 		}
 		
-		public function parse( tokens:Vector.<Token> ):Array
+		public static function parse( tokens:Vector.<Token> ):Array
 		{
 			var current:Array = [];
 			var stack:Array = [];

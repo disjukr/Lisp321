@@ -42,7 +42,7 @@ package lisp321
 		 * @param code 소스코드입니다.
 		 * @return 변환된 결과입니다.
 		 */
-		public function tokenize( code:String ):Vector.<Token>
+		public static function tokenize( code:String ):Vector.<Token>
 		{
 			var tokens:Vector.<Token> = new Vector.<Token>;
 			tokenExp.lastIndex = 0;
