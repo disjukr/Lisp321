@@ -84,7 +84,7 @@ package
 		{
 			var input:String = cases.files[ PARSER_INPUT ].content;
 			var output:String = JSON.stringify( JSON.parse( cases.files[ PARSER_OUTPUT ].content ) );
-			var result:String = JSON.stringify( Parser.parse( Lexer.tokenize( input ) ) );
+			var result:String = JSON.stringify( TestUtil.AST2Format( Parser.parse( Lexer.tokenize( input ) ) )[ "list" ] );
 			return new TestResult( output == result, 0, output, result );
 		}
 		
