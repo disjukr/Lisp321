@@ -85,17 +85,19 @@ package
 			var input:String = cases.files[ PARSER_INPUT ].content;
 			var output:String = JSON.stringify( JSON.parse( cases.files[ PARSER_OUTPUT ].content ) );
 			var result:String = JSON.stringify( Parser.parse( Lexer.tokenize( input ) ) );
+			println( Lexer.tokenize( input ) );
+			println( Parser.parse( Lexer.tokenize( input ) ) );
 			return new TestResult( output == result, 0, output, result );
 		}
 		
 		private function print( text:Object ):void
 		{
-			if( traceField ) traceField.appendText( text.toString() );
+			if( traceField )if( text ) traceField.appendText( text.toString() );
 		}
 		
 		private function println( text:Object ):void
 		{
-			if( traceField ) traceField.appendText( text.toString() + "\n" );
+			if( traceField )if( text ) traceField.appendText( text.toString() + "\n" );
 		}
 		
 	}
