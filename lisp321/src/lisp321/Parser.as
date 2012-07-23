@@ -9,31 +9,35 @@ package lisp321
 		
 		public static function parse( tokens:Vector.<Token> ):Array
 		{
-			var current:Array = [];
-			var stack:Array = [];
+			var stack:Array = [ [] ];
+			var list:Array;
 			for each( var token:Token in tokens )
 			{
 				if( token.isAtom )
-					current.push( token.value );
+					stack[ stack.length-1 ].push( token.value );
 				else
 				{
 					switch( token.type )
 					{
 						case Token.TYPE_SYMBOL :
-							current.push( new Symbol( token.code ) );
+							stack[ stack.length-1 ].push( new Symbol( token.code ) );
 							break;
 						case Token.TYPE_OPEN :
-							stack.push( current );
-							current.push( [] );
-							current = current[ current.length-1 ];
+							stack.push( [] );
 							break;
 						case Token.TYPE_CLOSE :
-							current = stack.pop();
+							if( stack.length > 1 )
+							{
+								list = stack.pop();
+								stack[ stack.length-1 ].push( list );
+							} else {
+								//throw( new Error( "괄호 짝 안맞음;" ) );
+							}
 							break;
 					}
 				}
 			}
-			return current;
+			return stack.pop();
 		}
 		
 	}
