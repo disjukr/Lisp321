@@ -13,11 +13,6 @@ package
 	
 	public class Lisp321TestCase extends Sprite
 	{
-		private static var LEXER_INPUT:String = "lexer-input.lisp";
-		private static var LEXER_OUTPUT:String = "lexer-output.txt";
-		private static var PARSER_INPUT:String = "parser-input.lisp";
-		private static var PARSER_OUTPUT:String = "parser-output.json";
-		
 		private var traceField:TextField;
 		private var testCaseRequest:URLRequest;
 		private var testCaseLoader:URLLoader;
@@ -30,7 +25,7 @@ package
 			traceField.x = traceField.y = 0;
 			traceField.width = stage.stageWidth;
 			traceField.height = stage.stageHeight;
-			testCaseRequest = new URLRequest( "https://api.github.com/gists/bf8ee516f5806355ed3a" );
+			testCaseRequest = new URLRequest( "https://api.github.com/gists/bf8ee516f5806355ed3a?"+Math.random() );
 			testCaseLoader = new URLLoader;
 			testCaseLoader.load( testCaseRequest );
 			testCaseLoader.addEventListener( Event.COMPLETE, COMPLETE );
@@ -46,15 +41,22 @@ package
 		private function COMPLETE( e:Event ):void
 		{
 			cases = JSON.parse( testCaseLoader.data );
-			print( "test Lexer.as..." );
-			test( testLexer );
-			print( "test Parser.as..." );
-			test( testParser );
+			//clear();
+			println( "test Lexer.as..." );
+			print( "\tcase 1 : " );
+			test( testLexer, [ "lexer-1.lisp", "lexer-1.txt" ] );
+			println( "test Parser.as..." );
+			print( "\tcase 1 : " );
+			test( testParser, [ "parser-1.lisp", "parser-1.json" ] );
+			print( "\tcase 2 : " );
+			test( testParser, [ "parser-2.lisp", "parser-2.json" ] );
+			print( "\tcase 3 : " );
+			test( testParser, [ "parser-3.lisp", "parser-3.json" ] );
 		}
 		
-		private function test( testFunc:Function ):void
+		private function test( testFunc:Function, args:Array=null ):void
 		{
-			var testResult:TestResult = testFunc();
+			var testResult:TestResult = testFunc.apply( null, args );
 			if( testResult.testSucceed )
 				println( "OK" );
 			else
@@ -64,13 +66,14 @@ package
 			}
 		}
 		
-		private function testLexer():TestResult
+		private function testLexer( $input:String, $output:String ):TestResult
 		{
-			var input:String = cases.files[ LEXER_INPUT ].content;
-			var output:Array = cases.files[ LEXER_OUTPUT ].content.split( "\n" );
+			var input:String = cases.files[ $input ].content;
+			var output:Array = cases.files[ $output ].content.split( "\n" );
+			output.length -= 1; // trim last \n
 			var tokens:Vector.<Token> = Lexer.tokenize( input );
 			if( tokens.length != output.length )
-				return new TestResult( false, 0, "", "", "줄 수가 맞지 않음" );
+				return new TestResult( false, 0, String( output.length ), String( tokens.length ), "줄 수가 맞지 않음" );
 			for( var i:int=0; i<output.length; ++i )
 			{
 				if( tokens[ i ].toString() == output[ i ] )
@@ -80,12 +83,28 @@ package
 			return new TestResult( true );
 		}
 		
-		private function testParser():TestResult
+		private function testParser( $input:String, $output:String ):TestResult
 		{
-			var input:String = cases.files[ PARSER_INPUT ].content;
-			var output:String = JSON.stringify( JSON.parse( cases.files[ PARSER_OUTPUT ].content ) );
-			var result:String = JSON.stringify( TestUtil.AST2Format( Parser.parse( Lexer.tokenize( input ) ) )[ "list" ] );
+			var input:String = cases.files[ $input ].content;
+			var output:String = JSON.stringify( JSON.parse( cases.files[ $output ].content ) );
+			var format:Object = {};
+			try
+			{
+				format.forms = TestUtil.AST2Format( Parser.parse( Lexer.tokenize( input ) ) )[ "list" ];
+				format.success = true;
+			}
+			catch( e:Error )
+			{
+				format.error = e.message;
+				format.success = false;
+			}
+			var result:String = JSON.stringify( format );
 			return new TestResult( output == result, 0, output, result );
+		}
+		
+		private function clear():void
+		{
+			if( traceField ) traceField.text = "";
 		}
 		
 		private function print( text:Object ):void
