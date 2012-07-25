@@ -41,7 +41,6 @@ package
 		private function COMPLETE( e:Event ):void
 		{
 			cases = JSON.parse( testCaseLoader.data );
-			//clear();
 			println( "test Lexer.as..." );
 			print( "\tcase 1 : " );
 			test( testLexer, [ "lexer-1.lisp", "lexer-1.txt" ] );
@@ -60,10 +59,8 @@ package
 			if( testResult.testSucceed )
 				println( "OK" );
 			else
-			{
 				println( "FAIL" );
-				print( testResult );
-			}
+			print( testResult );
 		}
 		
 		private function testLexer( $input:String, $output:String ):TestResult
@@ -73,12 +70,12 @@ package
 			output.length -= 1; // trim last \n
 			var tokens:Vector.<Token> = Lexer.tokenize( input );
 			if( tokens.length != output.length )
-				return new TestResult( false, 0, String( output.length ), String( tokens.length ), "줄 수가 맞지 않음" );
+				return new TestResult( false, 0, String( output.length ), String( tokens.length ) );
 			for( var i:int=0; i<output.length; ++i )
 			{
 				if( tokens[ i ].toString() == output[ i ] )
 					continue;
-				return new TestResult( false, i, tokens[ i ].toString(), output[ i ], "결과 불일치" );
+				return new TestResult( false, i, tokens[ i ].toString(), output[ i ] );
 			}
 			return new TestResult( true );
 		}
@@ -100,11 +97,6 @@ package
 			}
 			var result:String = JSON.stringify( format );
 			return new TestResult( output == result, 0, output, result );
-		}
-		
-		private function clear():void
-		{
-			if( traceField ) traceField.text = "";
 		}
 		
 		private function print( text:Object ):void
