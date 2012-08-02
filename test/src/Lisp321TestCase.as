@@ -51,6 +51,9 @@ package
 			test( testParser, [ "parser-2.lisp", "parser-2.json" ] );
 			print( "\tcase 3 : " );
 			test( testParser, [ "parser-3.lisp", "parser-3.json" ] );
+			println( "test Evaluator.as..." );
+			print( "\tcase 1 : " );
+			test( testEvaluator, [ "eval-1.lisp", "eval-1.txt" ] );
 		}
 		
 		private function test( testFunc:Function, args:Array=null ):void
@@ -97,6 +100,12 @@ package
 			}
 			var result:String = JSON.stringify( format );
 			return new TestResult( output == result, 0, output, result );
+		}
+		
+		private function testEvaluator( $input:String, $output:String ):TestResult
+		{
+			// TODO : 구현
+			return new TestResult;
 		}
 		
 		private function print( text:Object ):void
