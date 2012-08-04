@@ -99,7 +99,7 @@ package
 				format.success = false;
 			}
 			var result:String = JSON.stringify( format );
-			return new TestResult( output == result, 0, output, result );
+			return new TestResult( TestUtil.checkEqual( format, JSON.parse( output ) ), 0, output, result );
 		}
 		
 		private function testEvaluator( $input:String, $output:String ):TestResult
