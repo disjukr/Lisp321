@@ -62,8 +62,10 @@ package
 			if( testResult.testSucceed )
 				println( "OK" );
 			else
+			{
 				println( "FAIL" );
-			print( testResult );
+				print( testResult );
+			}
 		}
 		
 		private function testLexer( $input:String, $output:String ):TestResult
