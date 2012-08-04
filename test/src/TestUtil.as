@@ -33,5 +33,26 @@ package
 			return result;
 		}
 		
+		public static function checkEqual( a:Object, b:Object ):Boolean
+		{
+			for( var item:String in a )
+			{
+				if(	a[ item ] is Number
+					|| a[ item ] is Boolean
+					|| a[ item ] is String
+				)
+				{
+					if( a[ item ] == b[ item ] )
+						continue;
+					else return false;
+				} else {
+					if( checkEqual( a[ item ], b[ item ] ) )
+						continue;
+					else return false;
+				}
+			}
+			return true;
+		}
+		
 	}
 }
