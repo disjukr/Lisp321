@@ -1,5 +1,6 @@
 package
 {
+	import lisp321.Evaluator;
 	import lisp321.Symbol;
 
 	public class TestUtil
@@ -52,6 +53,25 @@ package
 				}
 			}
 			return true;
+		}
+		
+		public static function dataToLiteral( data:Object ):String
+		{
+			if( data is Number )
+				return String( data );
+			if( data is String )
+				return "\"" + String( data )
+					.replace( "\"", "\\\"" )
+					.replace( "\'", "\\\'" )
+					.replace( "\n", "\\n" )
+					.replace( "\r", "\\r" )
+					.replace( "\t", "\\t" )
+					.replace( "\\", "\\\\" ) + "\"";
+			if( data is Boolean )
+				return data? "#t" : "#f";
+			if( data is Function )
+				return data.toString();
+			return dataToLiteral( Evaluator.evaluate( data, {} ) );
 		}
 		
 	}
