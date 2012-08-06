@@ -109,11 +109,14 @@ package
 		{
 			var input:String = cases.files[ $input ].content;
 			var output:Array = String( cases.files[ $output ].content ).split( "\n" );
+			output.length -= 1; // trim last \n
 			var actual:String;
 			var ast:Array = Parser.parse( Lexer.tokenize( input ) );
 			var environment:Object = {
 				"+" : function( a:Number, b:Number ):Number{ return a+b; }
 			};
+			if( ast.length != output.length )
+				return new TestResult( false, 0, String( output.length ), String( ast.length ) );
 			for( var i:int=0; i<ast.length; ++i )
 			{
 				try
