@@ -6,6 +6,7 @@ package
 	import flash.net.URLRequest;
 	import flash.text.TextField;
 	
+	import lisp321.Evaluator;
 	import lisp321.Lexer;
 	import lisp321.Parser;
 	import lisp321.Symbol;
@@ -106,8 +107,26 @@ package
 		
 		private function testEvaluator( $input:String, $output:String ):TestResult
 		{
-			// TODO : 구현
-			return new TestResult;
+			var input:String = cases.files[ $input ].content;
+			var output:Array = String( cases.files[ $output ].content ).split( "\n" );
+			var actual:String;
+			var ast:Array = Parser.parse( Lexer.tokenize( input ) );
+			var environment:Object = {
+				"+" : function( a:Number, b:Number ):Number{ return a+b; }
+			};
+			for( var i:int=0; i<ast.length; ++i )
+			{
+				try
+				{
+					actual = "= " + TestUtil.dataToLiteral( ast[ i ], environment );
+				} catch( e:Error )
+				{
+					actual = "! " + e.message;
+				}
+				if( actual != output[ i ] )
+					return new TestResult( false, i, output[ i ], actual );
+			}
+			return new TestResult( true );
 		}
 		
 		private function print( text:Object ):void
