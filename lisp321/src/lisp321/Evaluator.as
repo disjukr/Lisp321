@@ -27,15 +27,11 @@ package lisp321
 					if( func != null )
 						func.apply( null, list );
 				}
-				try
-				{
-					func = Function( evaluate( first, environment ) );
-				} catch( e:Error ) {
-					throw new Error( form + " is not applicable" );
-				}
+				func = evaluate( first, environment ) as Function;
+				if( !( func is Function ) ) throw new Error( first + " is not applicable" );
 				for each( var item:Object in list )
 					item = evaluate( item, environment );
-				func.apply( null, list );
+				return func.apply( null, list );
 			}
 			//if form is Atom
 			return form;
