@@ -2,27 +2,23 @@ package lisp321
 {
 	public class Evaluator
 	{
-		private static function define( environment:Object, symbol:Symbol, value:Object ):void
-		{
-			environment[ symbol.name ] = evaluate( value, environment );
-		}
-		
-		private static function lambda( environment:Object, params:Array, body:Object ):Function
-		{
-			return function( ...args ):Object
-			{
-				var _environment:Object = {};
-				for ( var item:String in environment )
-					_environment[ item ] = environment[ item ];
-				for( var i:int=0; i<params.length; ++i )
-					_environment[ params[ i ] ] = evaluate( args[ i ], _environment );
-				return evaluate( body, _environment );
-			}
-		}
-		
 		private static var specialForms:Object = {
-			"define" : define,
-			"lambda" : lambda
+			"define" : function( environment:Object, symbol:Symbol, value:Object ):void
+			{
+				environment[ symbol.name ] = evaluate( value, environment );
+			},
+			"lambda" : function( environment:Object, params:Array, body:Object ):Function
+			{
+				return function( ...args ):Object
+				{
+					var _environment:Object = {};
+					for ( var item:String in environment )
+						_environment[ item ] = environment[ item ];
+					for( var i:int=0; i<params.length; ++i )
+						_environment[ params[ i ] ] = evaluate( args[ i ], _environment );
+					return evaluate( body, _environment );
+				}
+			}
 		};
 		
 		public static function evaluate( form:Object, environment:Object ):Object
