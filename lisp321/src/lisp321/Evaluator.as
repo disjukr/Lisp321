@@ -18,6 +18,10 @@ package lisp321
 						_environment[ params[ i ] ] = evaluate( args[ i ], _environment );
 					return evaluate( body, _environment );
 				}
+			},
+			"if" : function( environment:Object, condition:Object, consequent:Object, alternative:Object ):Object
+			{
+				evaluate( evaluate( condition, environment )? consequent : alternative, environment );
 			}
 		};
 		
