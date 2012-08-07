@@ -57,6 +57,8 @@ package
 		
 		public static function dataToLiteral( data:Object, environment:Object ):String
 		{
+			if( data == null )
+				return "";
 			if( data is Number )
 				return String( data );
 			if( data is String )
@@ -69,6 +71,8 @@ package
 					.replace( "\\", "\\\\" ) + "\"";
 			if( data is Boolean )
 				return data? "#t" : "#f";
+			if( data is Symbol )
+				return dataToLiteral( Evaluator.evaluate( data, environment ), environment );
 			if( data is Array )
 				return dataToLiteral( Evaluator.evaluate( data, environment ), environment );
 			return data.toString();
