@@ -42,14 +42,18 @@ package lisp321
 				first = form[ 0 ];
 				if( first is Symbol )
 				{
-					func = specialForms[ Symbol( first ).name ]; 
+					func = specialForms[ Symbol( first ).name ];
 					if( func != null )
-						func.apply( null, list );
+					{
+						list.unshift( environment );
+						return func.apply( null, list );
+					}
 				}
 				func = evaluate( first, environment ) as Function;
-				if( !( func is Function ) ) throw new EvaluationError( first + " is not applicable" );
-				for each( var item:Object in list )
-					item = evaluate( item, environment );
+				if( !( func is Function ) )
+					throw new EvaluationError( first + " is not applicable" );
+				for( var item:String in list )
+					list[ item] = evaluate( list[ item ], environment );
 				return func.apply( null, list );
 			}
 			//if form is Atom
