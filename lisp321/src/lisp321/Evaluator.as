@@ -22,6 +22,11 @@ package lisp321
 			"if" : function( environment:Object, condition:Object, consequent:Object, alternative:Object ):Object
 			{
 				evaluate( evaluate( condition, environment )? consequent : alternative, environment );
+			},
+			"set!" : function( environment:Object, symbol:Symbol, value:Object ):Object
+			{
+				environment[ symbol.name ] = evaluate( value, environment );
+				return environment[ symbol.name ];
 			}
 		};
 		
