@@ -32,14 +32,14 @@ package lisp321
 							list = stack.pop();
 							if( stack.length )
 								stack[ stack.length-1 ].push( list );
-							else throw new Error( "unmatched-close" );
+							else throw new ParsingError( "unmatched-close" );
 							break;
 					}
 				}
 			}
 			result = stack.pop();
 			if( stack.length )
-				throw new Error( "unmatched-open" );
+				throw new ParsingError( "unmatched-open" );
 			return result;
 		}
 		
