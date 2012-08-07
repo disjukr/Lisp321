@@ -46,6 +46,8 @@ package
 			println( "test Lexer.as..." );
 			print( "\tcase 1 : " );
 			test( testLexer, [ "lexer-1.lisp", "lexer-1.txt" ] );
+			print( "\tcase 2 : " );
+			test( testLexer, [ "lexer-2.lisp", "lexer-2.txt" ] );
 			println( "test Parser.as..." );
 			print( "\tcase 1 : " );
 			test( testParser, [ "parser-1.lisp", "parser-1.json" ] );
@@ -116,10 +118,12 @@ package
 			var output:Array = String( cases.files[ $output ].content ).split( "\n" );
 			output.length -= 1; // trim last \n
 			var actual:String;
-			var actualData:Object;
+			var actualData:String;
 			var ast:Array = Parser.parse( Lexer.tokenize( input ) );
 			var environment:Object = {
-				"+" : function( a:Number, b:Number ):Number{ return a+b; }
+				"+" : function( a:Number, b:Number ):Number{ return a+b; },
+				"*" : function( a:Number, b:Number ):Number{ return a*b; },
+				"<" : function( a:Number, b:Number ):Boolean{ return a<b; }
 			};
 			if( ast.length != output.length )
 				return new TestResult( false, 0, String( output.length ), String( ast.length ) );
@@ -128,7 +132,7 @@ package
 				try
 				{
 					actualData = TestUtil.dataToLiteral( ast[ i ], environment );
-					if( actualData )
+					if( actualData.length )
 						actual = "= " + actualData;
 					else actual = "=";
 				} catch( e:EvaluationError )
