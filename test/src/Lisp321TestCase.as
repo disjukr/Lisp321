@@ -6,6 +6,7 @@ package
 	import flash.net.URLRequest;
 	import flash.text.TextField;
 	
+	import lisp321.EvaluationError;
 	import lisp321.Evaluator;
 	import lisp321.Lexer;
 	import lisp321.Parser;
@@ -130,7 +131,7 @@ package
 					if( actualData )
 						actual = "= " + actualData;
 					else actual = "=";
-				} catch( e:Error )
+				} catch( e:EvaluationError )
 				{
 					actual = "! " + e.message;
 				}
