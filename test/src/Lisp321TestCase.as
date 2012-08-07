@@ -115,6 +115,7 @@ package
 			var output:Array = String( cases.files[ $output ].content ).split( "\n" );
 			output.length -= 1; // trim last \n
 			var actual:String;
+			var actualData:Object;
 			var ast:Array = Parser.parse( Lexer.tokenize( input ) );
 			var environment:Object = {
 				"+" : function( a:Number, b:Number ):Number{ return a+b; }
@@ -125,7 +126,10 @@ package
 			{
 				try
 				{
-					actual = "= " + TestUtil.dataToLiteral( ast[ i ], environment );
+					actualData = TestUtil.dataToLiteral( ast[ i ], environment );
+					if( actualData )
+						actual = "= " + actualData;
+					else actual = "=";
 				} catch( e:Error )
 				{
 					actual = "! " + e.message;
