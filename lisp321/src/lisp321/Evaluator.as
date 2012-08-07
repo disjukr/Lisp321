@@ -47,7 +47,7 @@ package lisp321
 						func.apply( null, list );
 				}
 				func = evaluate( first, environment ) as Function;
-				if( !( func is Function ) ) throw new Error( first + " is not applicable" );
+				if( !( func is Function ) ) throw new EvaluationError( first + " is not applicable" );
 				for each( var item:Object in list )
 					item = evaluate( item, environment );
 				return func.apply( null, list );
