@@ -10,6 +10,7 @@ package
 	import lisp321.Evaluator;
 	import lisp321.Lexer;
 	import lisp321.Parser;
+	import lisp321.ParsingError;
 	import lisp321.Symbol;
 	import lisp321.Token;
 	
@@ -62,6 +63,10 @@ package
 			test( testEvaluator, [ "eval-2.lisp", "eval-2.txt" ] );
 			print( "\tcase 3 : " );
 			test( testEvaluator, [ "eval-3.lisp", "eval-3.txt" ] );
+			print( "\tcase 4 : " );
+			test( testEvaluator, [ "eval-4.lisp", "eval-4.txt" ] );
+			print( "\tcase 5 : " );
+			test( testEvaluator, [ "eval-5.lisp", "eval-5.txt" ] );
 		}
 		
 		private function test( testFunc:Function, args:Array=null ):void
@@ -103,7 +108,7 @@ package
 				format.forms = TestUtil.AST2Format( Parser.parse( Lexer.tokenize( input ) ) )[ "list" ];
 				format.success = true;
 			}
-			catch( e:Error )
+			catch( e:ParsingError )
 			{
 				format.error = e.message;
 				format.success = false;
