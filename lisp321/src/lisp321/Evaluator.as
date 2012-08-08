@@ -25,8 +25,7 @@ package lisp321
 			},
 			"set!" : function( environment:Object, symbol:Symbol, value:Object ):Object
 			{
-				environment[ symbol.name ] = evaluate( value, environment );
-				return environment[ symbol.name ];
+				return environment[ symbol.name ] = evaluate( value, environment );
 			},
 			"and" : function( environment:Object, a:Object, b:Object ):Boolean
 			{
