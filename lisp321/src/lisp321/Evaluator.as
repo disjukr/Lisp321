@@ -27,6 +27,14 @@ package lisp321
 			{
 				environment[ symbol.name ] = evaluate( value, environment );
 				return environment[ symbol.name ];
+			},
+			"and" : function( environment:Object, a:Object, b:Object ):Boolean
+			{
+				return evaluate( a, environment ) && evaluate( b,environment );
+			},
+			"or" : function( environment:Object, a:Object, b:Object ):Boolean
+			{
+				return evaluate( a, environment ) || evaluate( b, environment );
 			}
 		};
 		
