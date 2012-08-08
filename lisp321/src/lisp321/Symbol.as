@@ -23,11 +23,11 @@ package lisp321
 		
 		/**
 		 * 문자열 표현으로 변환합니다.
-		 * @return '[<심볼이름> Symbol]'형식의 문자열을 반환합니다.
+		 * @return name 속성을 반환합니다.
 		 */
 		public function toString():String
 		{
-			return "[" + name + " Symbol]";
+			return name;
 		}
 		
 	}
