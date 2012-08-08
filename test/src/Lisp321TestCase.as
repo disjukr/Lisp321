@@ -67,6 +67,10 @@ package
 			test( testEvaluator, [ "eval-4.lisp", "eval-4.txt" ] );
 			print( "\tcase 5 : " );
 			test( testEvaluator, [ "eval-5.lisp", "eval-5.txt" ] );
+			print( "\tcase 6 : " );
+			test( testEvaluator, [ "eval-6.lisp", "eval-6.txt" ] );
+			print( "\tcase 7 : " );
+			test( testEvaluator, [ "eval-7.lisp", "eval-7.txt" ] );
 		}
 		
 		private function test( testFunc:Function, args:Array=null ):void
