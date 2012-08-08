@@ -33,7 +33,12 @@ package lisp321
 		public static function evaluate( form:Object, environment:Object ):Object
 		{
 			if( form is Symbol )
-				return environment[ Symbol( form ).name ];
+			{
+				var name:String = Symbol( form ).name;
+				if( environment.hasOwnProperty( name ) )
+					return environment[ name ];
+				else throw new EvaluationError( name + " is undefined" );
+			}
 			if( form is Array )
 			{
 				var list:Array = form.slice( 1 );
