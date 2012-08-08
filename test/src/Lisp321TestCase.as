@@ -135,7 +135,11 @@ package
 				">" : function( a:Number, b:Number ):Boolean{ return a>b; },
 				"<=" : function( a:Number, b:Number ):Boolean{ return a<=b; },
 				">=" : function( a:Number, b:Number ):Boolean{ return a>=b; },
-				"=" : function( a:Object, b:Object ):Boolean{ return a==b },
+				"=" : function( a:Object, b:Object ):Boolean
+				{
+					if( typeof a != typeof b ) return false;
+					return a==b
+				},
 				"/=" : function( a:Object, b:Object ):Boolean{ return a!=b },
 				"not" : function( a:Object ):Boolean{ return !a },
 				"#t" : true,
