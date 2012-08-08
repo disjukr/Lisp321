@@ -117,8 +117,9 @@ package
 			var input:String = cases.files[ $input ].content;
 			var output:Array = String( cases.files[ $output ].content ).split( "\n" );
 			output.length -= 1; // trim last \n
-			var actual:String;
-			var actualData:String;
+			var expected:String;
+			var expectedData:Object;
+			var actualData:Object;
 			var ast:Array = Parser.parse( Lexer.tokenize( input ) );
 			var environment:Object = {
 				"+" : function( a:Object, b:Object ):Number{ return a+b; },
@@ -128,20 +129,31 @@ package
 			};
 			if( ast.length != output.length )
 				return new TestResult( false, 0, String( output.length ), String( ast.length ) );
-			for( var i:int=0; i<ast.length; ++i )
+			for( var i:int=0; i<output.length; ++i )
 			{
-				try
+				actualData = ast[ i ];
+				expected = output[ i ];
+				if( expected.charAt() == "!" )
 				{
-					actualData = TestUtil.dataToLiteral( ast[ i ], environment );
-					if( actualData.length )
-						actual = "= " + actualData;
-					else actual = "=";
-				} catch( e:EvaluationError )
-				{
-					actual = "! " + e.message;
+					try
+					{
+						Evaluator.evaluate( actualData, environment );
+					} catch( e:EvaluationError ) {
+						expected = expected.slice( 2 );
+						if( expected == e.message )
+							continue;
+						else return new TestResult( false, i, expected, e.message );
+					}
 				}
-				if( actual != output[ i ] )
-					return new TestResult( false, i, output[ i ], actual );
+				if( expected.length == 0 ) expectedData == null;
+				else
+				{
+					expected = expected.slice( 2 );
+					expectedData = Evaluator.evaluate( Parser.parse( Lexer.tokenize( expected ) )[ 0 ], {} );
+				}
+				actualData = Evaluator.evaluate( ast[ i ], environment );
+				if( expectedData != actualData )
+					return new TestResult( false, i, expectedData.toString(), actualData.toString() );
 			}
 			return new TestResult( true );
 		}
