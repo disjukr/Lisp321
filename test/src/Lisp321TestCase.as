@@ -123,9 +123,18 @@ package
 			var ast:Array = Parser.parse( Lexer.tokenize( input ) );
 			var environment:Object = {
 				"+" : function( a:Object, b:Object ):Number{ return a+b; },
+				"-" : function( a:Number, b:Number ):Number{ return a-b; },
 				"*" : function( a:Number, b:Number ):Number{ return a*b; },
+				"/" : function( a:Number, b:Number ):Number{ return a/b; },
 				"<" : function( a:Number, b:Number ):Boolean{ return a<b; },
-				"=" : function( a:Object, b:Object ):Boolean{ return a==b }
+				">" : function( a:Number, b:Number ):Boolean{ return a>b; },
+				"<=" : function( a:Number, b:Number ):Boolean{ return a<=b; },
+				">=" : function( a:Number, b:Number ):Boolean{ return a>=b; },
+				"=" : function( a:Object, b:Object ):Boolean{ return a==b },
+				"/=" : function( a:Object, b:Object ):Boolean{ return a!=b },
+				"not" : function( a:Object ):Boolean{ return !a },
+				"#t" : true,
+				"#f" : false
 			};
 			if( ast.length != output.length )
 				return new TestResult( false, 0, String( output.length ), String( ast.length ) );
