@@ -34,6 +34,10 @@ package lisp321
 			"or" : function( environment:Object, a:Object, b:Object ):Boolean
 			{
 				return evaluate( a, environment ) || evaluate( b, environment );
+			},
+			"list" : function( environment:Object, ...args ):Array
+			{
+				if( args ) return args else return [];
 			}
 		};
 		
