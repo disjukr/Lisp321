@@ -9,6 +9,7 @@ package
 	import lisp321.EvaluationError;
 	import lisp321.Evaluator;
 	import lisp321.Lexer;
+	import lisp321.Pair;
 	import lisp321.Parser;
 	import lisp321.ParsingError;
 	import lisp321.Symbol;
@@ -129,7 +130,8 @@ package
 			var expected:String;
 			var expectedData:Object;
 			var actualData:Object;
-			var ast:Array = Parser.parse( Lexer.tokenize( input ) );
+			var _ast:Pair;
+			var ast:Array = Parser.parse( Lexer.tokenize( input ) ).toArray();
 			var environment:Object = {
 				"+" : function( a:Object, b:Object ):Number{ return a+b; },
 				"-" : function( a:Number, b:Number ):Number{ return a-b; },
@@ -142,12 +144,18 @@ package
 				"=" : function( a:Object, b:Object ):Boolean
 				{
 					if( typeof a != typeof b ) return false;
-					return a==b
+					return a==b;
 				},
 				"/=" : function( a:Object, b:Object ):Boolean{ return a!=b },
 				"not" : function( a:Object ):Boolean{ return !a },
 				"#t" : true,
-				"#f" : false
+				"#f" : false,
+				"null?" : function( a:Object ):Boolean{ return a==null },
+				"nil" : null,
+				"car" : function( a:Pair ):Object{ return a.car },
+				"cdr" : function( a:Pair ):Object{ return a.cdr },
+				"cons" : function( a:Object, b:Object ):Pair{ return new Pair( a, b ) },
+				"map" : function( a:Function, b:Pair ):Pair{ return b.map( a ) }
 			};
 			if( ast.length != output.length )
 				return new TestResult( false, 0, String( output.length ), String( ast.length ) );
@@ -171,9 +179,16 @@ package
 				else
 				{
 					expected = expected.slice( 2 );
-					expectedData = Evaluator.evaluate( Parser.parse( Lexer.tokenize( expected ) )[ 0 ], {} );
+					_ast = Parser.parse( Lexer.tokenize( expected ) );
+					expectedData = Evaluator.evaluate( _ast? _ast.car : null, {} );
 				}
-				actualData = Evaluator.evaluate( ast[ i ], environment );
+				try
+				{
+					actualData = Evaluator.evaluate( ast[ i ], environment );
+				} catch( e:Error )
+				{
+					return new TestResult( false, i, expectedData.toString(), e.message );
+				}
 				if( expectedData != actualData )
 					return new TestResult( false, i, expectedData.toString(), actualData.toString() );
 			}

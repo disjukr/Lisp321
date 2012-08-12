@@ -7,7 +7,7 @@ package lisp321
 		{
 		}
 		
-		public static function parse( tokens:Vector.<Token> ):Array
+		public static function parse( tokens:Vector.<Token> ):Pair
 		{
 			var stack:Array = [ [] ];
 			var list:Array;
@@ -40,7 +40,7 @@ package lisp321
 			result = stack.pop();
 			if( stack.length )
 				throw new ParsingError( "unmatched-open" );
-			return result;
+			return Pair.list( result );
 		}
 		
 	}

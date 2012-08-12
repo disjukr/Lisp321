@@ -29,7 +29,7 @@ package lisp321
 		{
 			var list:Pair = new Pair;
 			var current:Pair = list;
-			if( args.length )
+			if( args )if( args.length )
 			{
 				for( var i:int=0; i<args.length; ++i )
 				{
@@ -43,7 +43,8 @@ package lisp321
 					}
 				}
 				return list;
-			} else return null;
+			}
+			return null;
 		}
 		
 		public function get tail():Pair
@@ -52,6 +53,26 @@ package lisp321
 			while( tail.cdr is Pair )
 				tail = tail.cdr as Pair;
 			return tail;
+		}
+		
+		public function get length():int
+		{
+			if( car )
+			{
+				var i:int = 1;
+				var tail:Pair = this;
+				while( tail.cdr is Pair )
+				{
+					tail = tail.cdr as Pair;
+					++i;
+				}
+				return i;
+			} return 0;
+		}
+		
+		public function map( callback:Function, thisObject:* = null ):Pair
+		{
+			return Pair.list( toArray().map( callback, thisObject ) );
 		}
 		
 		public function toArray():Array

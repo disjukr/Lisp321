@@ -1,6 +1,7 @@
 package
 {
 	import lisp321.Evaluator;
+	import lisp321.Pair;
 	import lisp321.Symbol;
 
 	public class TestUtil
@@ -9,11 +10,11 @@ package
 		public static function AST2Format( ast:Object ):Object
 		{
 			var result:Object = {};
-			if( ast is Array )
+			if( ast is Pair )
 			{
 				result[ "type" ] = "list";
 				result[ "list" ] = [];
-				for each( var item:Object in ast )
+				for each( var item:Object in Pair( ast ).toArray() )
 					result[ "list" ].push( AST2Format( item ) );
 			}
 			else if( ast is Symbol )

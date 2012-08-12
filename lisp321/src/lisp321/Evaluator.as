@@ -7,15 +7,16 @@ package lisp321
 			{
 				environment[ symbol.name ] = evaluate( value, environment );
 			},
-			"lambda" : function( environment:Object, params:Array, body:Object ):Function
+			"lambda" : function( environment:Object, params:Pair, body:Object ):Function
 			{
 				return function( ...args ):Object
 				{
 					var _environment:Object = {};
 					for ( var item:String in environment )
 						_environment[ item ] = environment[ item ];
-					for( var i:int=0; i<params.length; ++i )
-						_environment[ params[ i ] ] = evaluate( args[ i ], _environment );
+					var _params:Array = params.toArray();
+					for( var i:int=0; i<_params.length; ++i )
+						_environment[ _params[ i ] ] = args[ i ];
 					return evaluate( body, _environment );
 				}
 			},
@@ -35,9 +36,9 @@ package lisp321
 			{
 				return evaluate( a, environment ) || evaluate( b, environment );
 			},
-			"list" : function( environment:Object, ...args ):Array
+			"list" : function( environment:Object, ...args ):Pair
 			{
-				if( args ) return args else return [];
+				return Pair.list( args );
 			}
 		};
 		
@@ -50,12 +51,16 @@ package lisp321
 					return environment[ name ];
 				else throw new EvaluationError( name + " is undefined" );
 			}
-			if( form is Array )
+			if( form is Pair )
 			{
-				var list:Array = form.slice( 1 );
+				var list:Array;
+				if( form.cdr is Pair )
+					list = form.cdr.toArray();
+				else
+					list = [];
 				var first:Object;
 				var func:Function;
-				first = form[ 0 ];
+				first = form.car;
 				if( first is Symbol )
 				{
 					func = specialForms[ Symbol( first ).name ];
@@ -67,7 +72,9 @@ package lisp321
 				}
 				func = evaluate( first, environment ) as Function;
 				if( !( func is Function ) )
-					throw new EvaluationError( first + " is not applicable" );
+					throw new EvaluationError(
+						( first==null? "nil" : first ) + " is not applicable"
+					);
 				for( var item:String in list )
 					list[ item] = evaluate( list[ item ], environment );
 				return func.apply( null, list );
