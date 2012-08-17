@@ -38,6 +38,24 @@ package lisp321
 			},
 			"list" : function( environment:Object, ...args ):Pair
 			{
+				/*
+				var list:Pair = new Pair;
+				var current:Pair = list;
+				if( args )if( args.length )
+				{
+					for( var i:int=0; i<args.length; ++i )
+					{
+						current.car = evaluate( args[ i ], environment );
+						if( i<args.length-1 )
+						{
+							current.cdr = new Pair;
+							current = current.cdr as Pair;
+						}
+					}
+					return list;
+				}
+				return null;
+				//*/
 				return Pair.list( args );
 			}
 		};

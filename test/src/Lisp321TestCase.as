@@ -130,17 +130,16 @@ package
 			var expected:String;
 			var expectedData:Object;
 			var actualData:Object;
-			var _ast:Pair;
-			var ast:Array = Parser.parse( Lexer.tokenize( input ) ).toArray();
+			var ast:Array = Parser.parse( Lexer.tokenize( input ) );
 			var environment:Object = {
-				"+" : function( a:Object, b:Object ):Number{ return a+b; },
-				"-" : function( a:Number, b:Number ):Number{ return a-b; },
-				"*" : function( a:Number, b:Number ):Number{ return a*b; },
-				"/" : function( a:Number, b:Number ):Number{ return a/b; },
-				"<" : function( a:Number, b:Number ):Boolean{ return a<b; },
-				">" : function( a:Number, b:Number ):Boolean{ return a>b; },
-				"<=" : function( a:Number, b:Number ):Boolean{ return a<=b; },
-				">=" : function( a:Number, b:Number ):Boolean{ return a>=b; },
+				"+" : function( a:Object, b:Object ):Number{ return a+b },
+				"-" : function( a:Number, b:Number ):Number{ return a-b },
+				"*" : function( a:Number, b:Number ):Number{ return a*b },
+				"/" : function( a:Number, b:Number ):Number{ return a/b },
+				"<" : function( a:Number, b:Number ):Boolean{ return a<b },
+				">" : function( a:Number, b:Number ):Boolean{ return a>b },
+				"<=" : function( a:Number, b:Number ):Boolean{ return a<=b },
+				">=" : function( a:Number, b:Number ):Boolean{ return a>=b },
 				"=" : function( a:Object, b:Object ):Boolean
 				{
 					if( typeof a != typeof b ) return false;
@@ -152,10 +151,25 @@ package
 				"#f" : false,
 				"null?" : function( a:Object ):Boolean{ return a==null },
 				"nil" : null,
-				"car" : function( a:Pair ):Object{ return a.car },
-				"cdr" : function( a:Pair ):Object{ return a.cdr },
+				"car" : function( a:Object ):Object
+				{
+					if( a is Pair )
+						return a.car;
+					else throw new EvaluationError(
+						( a? a.toString() : "nil" )+" is not a cons pair"
+					);
+				},
+				"cdr" : function( a:Object ):Object
+				{
+					if( a is Pair )
+						return a.cdr;
+					else throw new EvaluationError(
+						( a? a.toString() : "nil" )+" is not a cons pair"
+					);
+				},
 				"cons" : function( a:Object, b:Object ):Pair{ return new Pair( a, b ) },
-				"map" : function( a:Function, b:Pair ):Pair{ return b.map( a ) }
+				"map" : function( a:Function, b:Pair ):Pair{ return b.map( a ) },
+				"foldl" : function( a:Function, b:Object, c:Pair ):Object{ return c.foldl( a, b ) }
 			};
 			if( ast.length != output.length )
 				return new TestResult( false, 0, String( output.length ), String( ast.length ) );
@@ -163,7 +177,7 @@ package
 			{
 				actualData = ast[ i ];
 				expected = output[ i ];
-				if( expected.charAt() == "!" )
+				if( expected.charAt( 0 ) == "!" )
 				{
 					try
 					{
@@ -175,12 +189,11 @@ package
 						else return new TestResult( false, i, expected, e.message );
 					}
 				}
-				if( expected.length == 0 ) expectedData == null;
+				if( expected.length == 1 ) expectedData == null;
 				else
 				{
 					expected = expected.slice( 2 );
-					_ast = Parser.parse( Lexer.tokenize( expected ) );
-					expectedData = Evaluator.evaluate( _ast? _ast.car : null, {} );
+					expectedData = Parser.parse( Lexer.tokenize( expected ) )[ 0 ];
 				}
 				try
 				{
@@ -189,8 +202,15 @@ package
 				{
 					return new TestResult( false, i, expectedData.toString(), e.message );
 				}
-				if( expectedData != actualData )
-					return new TestResult( false, i, expectedData.toString(), actualData.toString() );
+				if( !TestUtil.checkEqual( expectedData, actualData ) )
+					return new TestResult(
+						false,
+						i,
+						expectedData?
+						expectedData.toString() : "null",
+						actualData?
+						actualData.toString() : "null"
+					);
 			}
 			return new TestResult( true );
 		}

@@ -37,6 +37,9 @@ package
 		
 		public static function checkEqual( a:Object, b:Object ):Boolean
 		{
+			if( a is Pair )
+				return checkEqual( a.car, b.car )
+				&& checkEqual( a.cdr, b.cdr );
 			for( var item:String in a )
 			{
 				if(	a[ item ] is Number

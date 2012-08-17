@@ -72,7 +72,21 @@ package lisp321
 		
 		public function map( callback:Function, thisObject:* = null ):Pair
 		{
-			return Pair.list( toArray().map( callback, thisObject ) );
+			var ary:Array = [];
+			var current:Pair = this;
+			while( current is Pair )
+			{
+				ary.push( callback.apply( thisObject, [ current.car ] ) );
+				current = current.cdr as Pair;
+			}
+			return Pair.list( ary );
+		}
+		
+		public function foldl( callback:Function, param:Object, thisObject:* = null ):Object
+		{
+			if( cdr is Pair )
+				return cdr.foldl( callback, callback.apply( thisObject, [ param, car ] ), thisObject );
+			else return callback.apply( thisObject, [ param, car ] );
 		}
 		
 		public function toArray():Array
