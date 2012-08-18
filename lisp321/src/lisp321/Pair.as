@@ -1,10 +1,25 @@
 package lisp321
 {
+	/**
+	 * 객체쌍을 저장하는 자료형입니다.
+	 * @author 0xABCDEF
+	 */
 	public class Pair
 	{
+		/**
+		 * @default 첫번째 항목입니다.
+		 */
 		public var car:Object;
+		/**
+		 * @default 나머지 항목입니다.
+		 */
 		public var cdr:Object;
 		
+		/**
+		 * 객체쌍을 만듭니다.
+		 * @param car 첫번째 항목입니다.
+		 * @param cdr 나머지 항목입니다.
+		 */
 		public function Pair( car:Object = null, cdr:Object = null )
 		{
 			this.car = car;
@@ -47,6 +62,10 @@ package lisp321
 			return null;
 		}
 		
+		/**
+		 * 리스트의 마지막 객체쌍을 반환합니다.
+		 * @return cdr이 Pair라면 cdr의 tail을 반환하고 그렇지 않을 경우 자신을 반환합니다.
+		 */
 		public function get tail():Pair
 		{
 			var tail:Pair = this;
@@ -55,6 +74,10 @@ package lisp321
 			return tail;
 		}
 		
+		/**
+		 * 리스트의 길이를 구합니다.
+		 * @return 리스트의 길이입니다.
+		 */
 		public function get length():int
 		{
 			if( car )
@@ -70,6 +93,12 @@ package lisp321
 			} return 0;
 		}
 		
+		/**
+		 * 리스트의 각 항목에 함수를 실행하고 원래 리스트의 각 항목에 대한 함수 결과에 해당하는 항목으로 구성된 새 리스트를 만듭니다.
+		 * @param callback 리스트의 각 항목에 실행할 함수입니다.
+		 * @param thisObject 함수에서 this로 사용할 객체입니다.
+		 * @return 원래 리스트의 각 항목에 함수를 실행한 결과가 포함된 새 리스트입니다.
+		 */
 		public function map( callback:Function, thisObject:* = null ):Pair
 		{
 			var ary:Array = [];
@@ -82,6 +111,13 @@ package lisp321
 			return Pair.list( ary );
 		}
 		
+		/**
+		 * 리스트의 왼쪽부터 함수를 실행해나간 결과를 반환합니다.
+		 * @param callback 리스트의 각 항목끼리 실행할 함수입니다.
+		 * @param param 첫번째 항목과 같이 함수의 인자로 사용될 객체입니다.
+		 * @param thisObject 함수에서 this로 사용할 객체입니다.
+		 * @return 연산이 연결된 결과가 반환됩니다.
+		 */
 		public function foldl( callback:Function, param:Object, thisObject:* = null ):Object
 		{
 			if( cdr is Pair )
@@ -89,6 +125,10 @@ package lisp321
 			else return callback.apply( thisObject, [ param, car ] );
 		}
 		
+		/**
+		 * 리스트를 배열로 변환합니다.
+		 * @return 리스트의 항목은 배열로 변환하지 않습니다.
+		 */
 		public function toArray():Array
 		{
 			var array:Array = [];
@@ -104,6 +144,10 @@ package lisp321
 			return array;
 		}
 		
+		/**
+		 * 문자열로 변환합니다.
+		 * @return < car, cdr > 형식의 문자열을 반환합니다.
+		 */
 		public function toString():String
 		{
 			return "< " +
