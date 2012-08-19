@@ -38,10 +38,9 @@ package lisp321
 			},
 			"list" : function( environment:Object, ...args ):Pair
 			{
-				/*
 				var list:Pair = new Pair;
 				var current:Pair = list;
-				if( args )if( args.length )
+				if( args.length )
 				{
 					for( var i:int=0; i<args.length; ++i )
 					{
@@ -55,8 +54,6 @@ package lisp321
 					return list;
 				}
 				return null;
-				//*/
-				return Pair.list( args );
 			}
 		};
 		
