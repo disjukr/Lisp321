@@ -50,7 +50,7 @@ package lisp321
 			var type:String;
 			while( token )
 			{
-				for each( var i:int in { "1":1, "2":2, "3":3, "4":4, "7":7, "10":10 } )
+				for each( var i:int in { "open":1, "close":2, "hex":3, "decimal":4, "string":7, "symbol":10 } )
 					if( token[ i ] ) break;
 				switch( i )
 				{
