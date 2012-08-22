@@ -36,6 +36,10 @@ package lisp321
 			{
 				return evaluate( a, environment ) || evaluate( b, environment );
 			},
+			"quote" : function( environment:Object, object:Object ):Object
+			{
+				return object;
+			},
 			"list" : function( environment:Object, ...args ):Pair
 			{
 				var list:Pair = new Pair;
