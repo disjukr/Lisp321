@@ -57,13 +57,13 @@ package lisp321
 		 * @param beginIndex 토큰의 시작 인덱스입니다.
 		 * @param endIndex 토큰의 끝 인덱스입니다.
 		 */
-		public function Token( code:String, beginIndex:int = 0, endIndex:int = -1 )
+		public function Token( code:String, type:String, beginIndex:int = 0, endIndex:int = -1 )
 		{
 			this.code = code;
 			this.beginIndex = beginIndex;
 			this.endIndex = endIndex;
-			isAtom = false;
-			setType( code );
+			this.type = type;
+			setValue();
 		}
 		
 		/**
@@ -75,41 +75,29 @@ package lisp321
 			return type+" "+code;
 		}
 		
-		private function setType( token:String ):void
+		private function setValue():void
 		{
-			var head:String = token.charAt( 0 );
-			var headCode:Number = head.charCodeAt();
-			if( head == "(" )
+			switch( type )
 			{
-				type = TYPE_OPEN;
-				return;
+				case TYPE_NUMBER :
+					isAtom = true;
+					value = Number( code );
+					break;
+				case TYPE_STRING :
+					isAtom = true;
+					value = code.slice( 1, -1 )
+						.replace( "\\\"", "\"" )
+						.replace( "\\\'", "\'" )
+						.replace( "\\n", "\n" )
+						.replace( "\\r", "\r" )
+						.replace( "\\t", "\t" )
+						.replace( "\\\\", "\\" );
+					break;
+				default :
+					isAtom = false;
+					break;
 			}
-			if( head == ")" )
-			{
-				type = TYPE_CLOSE;
-				return;
-			}
-			if( headCode == 46 || headCode >= 48 && headCode <= 57 )
-			{
-				isAtom = true;
-				value = Number( token );
-				type = TYPE_NUMBER;
-				return;
-			}
-			if( head == "\"" || head == "\'" )
-			{
-				isAtom = true;
-				value = token.slice( 1, -1 )
-					.replace( "\\\"", "\"" )
-					.replace( "\\\'", "\'" )
-					.replace( "\\n", "\n" )
-					.replace( "\\r", "\r" )
-					.replace( "\\t", "\t" )
-					.replace( "\\\\", "\\" );
-				type = TYPE_STRING;
-				return;
-			}
-			type = TYPE_SYMBOL;
 		}
+		
 	}
 }

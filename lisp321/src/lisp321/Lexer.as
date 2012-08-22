@@ -9,23 +9,23 @@ package lisp321
 		
 		private static var tokenExp:RegExp =
 		new RegExp(
-			// OPEN	(\()
-			"(\\()"
+			// OPEN (\()
+			"(\\()" // $1
 			
-			// CLOSE	(\))
-			+ "|" + "(\\))"
+			// CLOSE (\))
+			+ "|" + "(\\))" // $2
 			
-			// NUMBER( 16진수 표현 )	(0[Xx][0-9A-Fa-f]+)
-			+ "|" + "(0[Xx][0-9A-Fa-f]+)"
+			// NUMBER ( 16진수 표현 ) (-?0[Xx][0-9A-Fa-f]+)
+			+ "|" + "(-?0[Xx][0-9A-Fa-f]+)" // $3
 			
-			// NUMBER	(\d*\.?\d+([Ee]([+-]?\d+)?)?)
-			+ "|" + "(\\d*\\.?\\d+([Ee]([+-]?\\d+)?)?)"
+			// NUMBER (-?\d*\.?\d+([Ee]([+-]?\d+)?)?)
+			+ "|" + "(-?\\d*\\.?\\d+([Ee]([+-]?\\d+)?)?)" // $4
 			
-			// STRING	("([^\\"]|\\.)*"|'([^\\']|\\.)*')
-			+ "|" + "(\"([^\\\\\"]|\\\\.)*\"|'([^\\\\']|\\\\.)*')"
+			// STRING ("([^\\"]|\\.)*"|'([^\\']|\\.)*')
+			+ "|" + "(\"([^\\\\\"]|\\\\.)*\"|'([^\\\\']|\\\\.)*')" // $7
 			
-			// SYMBOL	([^0-9\s\\"\\'\\\(\)\s][^\s\\"\\'\\\(\)]*)
-			+ "|" + "([^0-9\\s\\\"\\\'\\\\\\(\\)][^\\s\\\"\\\'\\\\\\(\\)]*)"
+			// SYMBOL ([^0-9\s\\"\\'\\\(\)\s][^\s\\"\\'\\\(\)]*)
+			+ "|" + "([^0-9\\s\\\"\\\'\\\\\\(\\)][^\\s\\\"\\\'\\\\\\(\\)]*)" // $10
 			
 			, "g"
 		);
@@ -47,9 +47,33 @@ package lisp321
 			var tokens:Vector.<Token> = new Vector.<Token>;
 			tokenExp.lastIndex = 0;
 			var token:Object = tokenExp.exec( code );
+			var type:String;
 			while( token )
 			{
-				tokens.push( new Token( token[ 0 ], token.index, tokenExp.lastIndex ) );
+				for each( var i:int in { "1":1, "2":2, "3":3, "4":4, "7":7, "10":10 } )
+					if( token[ i ] ) break;
+				switch( i )
+				{
+					case 1 :
+						type = Token.TYPE_OPEN;
+						break;
+					case 2 :
+						type = Token.TYPE_CLOSE;
+						break;
+					case 3 :
+						type = Token.TYPE_NUMBER;
+						break;
+					case 4 :
+						type = Token.TYPE_NUMBER;
+						break;
+					case 7 :
+						type = Token.TYPE_STRING;
+						break;
+					case 10 :
+						type = Token.TYPE_SYMBOL;
+						break;
+				}
+				tokens.push( new Token( token[ 0 ], type, token.index, tokenExp.lastIndex ) );
 				token = tokenExp.exec( code );
 			}
 			return tokens;
