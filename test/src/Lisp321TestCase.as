@@ -226,6 +226,14 @@ package
 					if( Number( a ).toString() == "NaN" )
 						throw new Error( "invalid number: \"" + a + "\"" );
 					return Number( a );
+				},
+				"downcase" : function( a:String ):String
+				{
+					return a.toLowerCase();
+				},
+				"upcase" : function( a:String ):String
+				{
+					return a.toUpperCase();
 				}
 			};
 			if( ast.length != output.length )
