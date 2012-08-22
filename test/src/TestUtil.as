@@ -37,6 +37,12 @@ package
 		
 		public static function checkEqual( a:Object, b:Object ):Boolean
 		{
+			if( a is Number )
+				return a == b;
+			if( a is Boolean )
+				return a == b;
+			if( a is String )
+				return a == b;
 			if( a is Pair )
 				return checkEqual( a.car, b.car )
 				&& checkEqual( a.cdr, b.cdr );

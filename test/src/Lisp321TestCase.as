@@ -204,6 +204,28 @@ package
 							c = String( a ).length+Number( c );
 					} else c = String( a ).length;
 					return String( a ).substring( Number( b ), Number( c ) );
+				},
+				"split-string" : function( a:String, b:Object=null ):Pair
+				{
+					if( b == null )
+						b = /\s+/g;
+					return Pair.list( a.split( b ) );
+				},
+				"join-string" : function( a:Pair, b:String=null ):String
+				{
+					if( a == null )
+						return "";
+					return a.toArray().join( b );
+				},
+				"number->string" : function( a:Number ):String
+				{
+					return String( a );
+				},
+				"string->number" : function( a:String ):Number
+				{
+					if( Number( a ).toString() == "NaN" )
+						throw new Error( "invalid number: \"" + a + "\"" );
+					return Number( a );
 				}
 			};
 			if( ast.length != output.length )
@@ -224,7 +246,8 @@ package
 						else return new TestResult( false, i, expected, e.message );
 					}
 				}
-				if( expected.length == 1 ) expectedData == null;
+				if( expected.length == 1 )
+					expectedData = null;
 				else
 				{
 					expected = expected.slice( 2 );
