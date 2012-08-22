@@ -100,7 +100,7 @@ package
 			{
 				if( tokens[ i ].toString() == output[ i ] )
 					continue;
-				return new TestResult( false, i, tokens[ i ].toString(), output[ i ] );
+				return new TestResult( false, i, output[ i ], tokens[ i ].toString() );
 			}
 			return new TestResult( true );
 		}
@@ -171,7 +171,40 @@ package
 				},
 				"cons" : function( a:Object, b:Object ):Pair{ return new Pair( a, b ) },
 				"map" : function( a:Function, b:Pair ):Pair{ return b.map( a ) },
-				"foldl" : function( a:Function, b:Object, c:Pair ):Object{ return c.foldl( a, b ) }
+				"foldl" : function( a:Function, b:Object, c:Pair ):Object{ return c.foldl( a, b ) },
+				"string?" : function( a:Object ):Boolean{ return a is String },
+				"string-size" : function( a:Object ):int
+				{
+					if( !( a is String ) )
+						throw new EvaluationError( "not string" );
+					return a.length
+				},
+				"concat" : function( ...args ):String
+				{
+					if( args.length )
+					{
+						for( var i:int=0; i<args.length; ++i )
+							if( !( args[ i ] is String ) )
+								throw new EvaluationError( "not string" );
+						return ( "" ).concat.apply( null, args );
+					} else return ""
+				},
+				"substring" : function( a:Object, b:Object=0, c:Object=null ):String
+				{
+					if( !( a is String ) )
+						throw new EvaluationError( "not string" );
+					if( b != null )
+					{
+						if( Number( b )<0 )
+							b = String( a ).length+Number( b );
+					} else b = String( a ).length;
+					if( c != null )
+					{
+						if( Number( c )<0 )
+							c = String( a ).length+Number( c );
+					} else c = String( a ).length;
+					return String( a ).substring( Number( b ), Number( c ) );
+				}
 			};
 			if( ast.length != output.length )
 				return new TestResult( false, 0, String( output.length ), String( ast.length ) );
