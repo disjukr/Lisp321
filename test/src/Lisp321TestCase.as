@@ -210,13 +210,23 @@ package
 				"split-string" : function( a:String, b:Object=null ):Pair
 				{
 					if( b == null )
+					{
 						b = /\s+/g;
+						var c:Array = a.split( b );
+						if( c[ 0 ] == "" )
+							c.shift();
+						if( c[ c.length-1 ] == "" )
+							c.pop();
+						return Pair.list( c );
+					}
 					return Pair.list( a.split( b ) );
 				},
 				"join-string" : function( a:Pair, b:String=null ):String
 				{
 					if( a == null )
 						return "";
+					if( b == null )
+						b = "";
 					return a.toArray().join( b );
 				},
 				"number->string" : function( a:Number ):String
@@ -226,7 +236,7 @@ package
 				"string->number" : function( a:String ):Number
 				{
 					if( Number( a ).toString() == "NaN" )
-						throw new Error( "invalid number: \"" + a + "\"" );
+						throw new EvaluationError( "invalid number: \"" + a + "\"" );
 					return Number( a );
 				},
 				"downcase" : function( a:String ):String
