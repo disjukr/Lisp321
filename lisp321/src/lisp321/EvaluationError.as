@@ -7,7 +7,7 @@ package lisp321
 	public class EvaluationError extends Error
 	{
 		/**
-		 * 새 EvaluationError 객체를 만듭니다. message를 지정하면 해당 값이 객체의 Error.message 속성에 할당됩니다.
+		 * 새 EvaluationError 객체를 만듭니다. message를 지정하면 해당 값이 객체의 message 속성에 할당됩니다.
 		 * @param message EvaluationError 객체에 연결된 문자열이며, 이 매개 변수는 선택 요소입니다.
 		 * @param id 지정된 오류 메시지에 연결할 참조 번호입니다.
 		 */
