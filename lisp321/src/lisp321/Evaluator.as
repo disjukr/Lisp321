@@ -1,5 +1,9 @@
 package lisp321
 {
+	/**
+	 * 값에대한 평가를 수행하는 클래스입니다.
+	 * @author 0xABCDEF
+	 */
 	public class Evaluator
 	{
 		private static var specialForms:Object = {
@@ -60,7 +64,12 @@ package lisp321
 				return null;
 			}
 		};
-		
+		/**
+		 * 값에 대한 평가를 수행합니다.
+		 * @param form 평가를 수행할 값입니다.
+		 * @param environment symbol 들이 들어있는 환경입니다.
+		 * @return 평가된 값입니다.
+		 */
 		public static function evaluate( form:Object, environment:Object ):Object
 		{
 			if( form is Symbol )
