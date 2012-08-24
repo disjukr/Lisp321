@@ -1,8 +1,16 @@
 package lisp321
 {
+	/**
+	 * 토큰열을 추상 문법 트리로 만들어주는 클래스입니다.
+	 * @author 0xABCDEF
+	 */
 	public class Parser
 	{
-		
+		/**
+		 * 토큰열을 추상 문법 트리로 변환합니다.
+		 * @param tokens 토큰열입니다.
+		 * @return 추상 문법 트리를 반환합니다.
+		 */
 		public static function parse( tokens:Vector.<Token> ):Array
 		{
 			var stack:Array = [ [] ];
