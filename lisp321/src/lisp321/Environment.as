@@ -63,6 +63,8 @@ package lisp321
 		public function clear():void
 		{
 			contents = {};
+			contents[ "the-environment" ] =
+				function():Environment{ return this };
 		}
 		
 	}
