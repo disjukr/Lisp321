@@ -26,6 +26,11 @@ package lisp321
 			this.cdr = cdr;
 		}
 		
+		/**
+		 * 리스트 여부를 반환합니다.
+		 * @param list 판단할 Pair 객체입니다.
+		 * @return 인자가 리스트라면 true를 반환합니다.
+		 */
 		public static function isList( list:Pair ):Boolean
 		{
 			if( list )
@@ -40,6 +45,11 @@ package lisp321
 			} else return false;
 		}
 		
+		/**
+		 * 배열을 리스트로 변환합니다. 원본 배열은 수정되지 않습니다.
+		 * @param args 변환할 배열입니다.
+		 * @return 리스트로 변환한 값을 반환합니다. 배열 안에 리스트가 들어있을 경우 그 것도 리스트로 변환합니다.
+		 */
 		public static function list( args:Array ):Pair
 		{
 			var list:Pair = new Pair;
