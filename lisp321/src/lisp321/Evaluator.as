@@ -7,44 +7,45 @@ package lisp321
 	public class Evaluator
 	{
 		private static var specialForms:Object = {
-			"define" : function( environment:Object, symbol:Symbol, value:Object ):void
+			"define" : function( environment:Environment, symbol:Symbol, value:Object ):void
 			{
-				environment[ symbol.name ] = evaluate( value, environment );
+				environment.set( symbol.name, evaluate( value, environment ) );
 			},
-			"lambda" : function( environment:Object, params:Pair, body:Object ):Function
+			"lambda" : function( environment:Environment, params:Pair, body:Object ):Function
 			{
 				return function( ...args ):Object
 				{
-					var _environment:Object = {};
-					for ( var item:String in environment )
-						_environment[ item ] = environment[ item ];
-					var _params:Array = params.toArray();
-					for( var i:int=0; i<_params.length; ++i )
-						_environment[ _params[ i ] ] = args[ i ];
+					var _environment:Environment = new Environment( environment );
+					if( params )
+					{
+						var _params:Array = params.toArray();
+						for( var i:int=0; i<_params.length; ++i )
+							_environment.set( _params[ i ].name, args[ i ] );
+					}
 					return evaluate( body, _environment );
 				}
 			},
-			"if" : function( environment:Object, condition:Object, consequent:Object, alternative:Object ):Object
+			"if" : function( environment:Environment, condition:Object, consequent:Object, alternative:Object ):Object
 			{
 				return evaluate( evaluate( condition, environment )? consequent : alternative, environment );
 			},
-			"set!" : function( environment:Object, symbol:Symbol, value:Object ):Object
+			"set!" : function( environment:Environment, symbol:Symbol, value:Object ):Object
 			{
-				return environment[ symbol.name ] = evaluate( value, environment );
+				return environment.set( symbol.name, evaluate( value, environment ) );
 			},
-			"and" : function( environment:Object, a:Object, b:Object ):Boolean
+			"and" : function( environment:Environment, a:Object, b:Object ):Boolean
 			{
 				return evaluate( a, environment ) && evaluate( b,environment );
 			},
-			"or" : function( environment:Object, a:Object, b:Object ):Boolean
+			"or" : function( environment:Environment, a:Object, b:Object ):Boolean
 			{
 				return evaluate( a, environment ) || evaluate( b, environment );
 			},
-			"quote" : function( environment:Object, object:Object ):Object
+			"quote" : function( environment:Environment, object:Object ):Object
 			{
 				return object;
 			},
-			"list" : function( environment:Object, ...args ):Pair
+			"list" : function( environment:Environment, ...args ):Pair
 			{
 				var list:Pair = new Pair;
 				var current:Pair = list;
@@ -60,8 +61,7 @@ package lisp321
 						}
 					}
 					return list;
-				}
-				return null;
+				} else return null;
 			}
 		};
 		/**
@@ -70,13 +70,13 @@ package lisp321
 		 * @param environment symbol 들이 들어있는 환경입니다.
 		 * @return 평가된 값입니다.
 		 */
-		public static function evaluate( form:Object, environment:Object ):Object
+		public static function evaluate( form:Object, environment:Environment ):Object
 		{
 			if( form is Symbol )
 			{
 				var name:String = Symbol( form ).name;
-				if( environment.hasOwnProperty( name ) )
-					return environment[ name ];
+				if( environment.exists( name ) )
+					return environment.get( name );
 				else throw new EvaluationError( name + " is undefined" );
 			}
 			if( form is Pair )

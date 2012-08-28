@@ -50,7 +50,6 @@ package lisp321
 		 * @default 토큰이 담는 자료가 원시자료일 경우 그 값을 정의합니다. 
 		 */
 		public var value:Object;
-		
 		/**
 		 * 토큰을 생성합니다.
 		 * @param code 코드입니다.
@@ -65,7 +64,6 @@ package lisp321
 			this.type = type;
 			setValue();
 		}
-		
 		/**
 		 * 문자열로 변환합니다.
 		 * @return token.type + " " + token.code가 반환됩니다.
@@ -74,7 +72,6 @@ package lisp321
 		{
 			return type+" "+code;
 		}
-		
 		private function setValue():void
 		{
 			switch( type )

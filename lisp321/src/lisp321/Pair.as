@@ -14,7 +14,6 @@ package lisp321
 		 * @default 나머지 항목입니다.
 		 */
 		public var cdr:Object;
-		
 		/**
 		 * 객체쌍을 만듭니다.
 		 * @param car 첫번째 항목입니다.
@@ -25,7 +24,6 @@ package lisp321
 			this.car = car;
 			this.cdr = cdr;
 		}
-		
 		/**
 		 * 리스트 여부를 반환합니다.
 		 * @param list 판단할 Pair 객체입니다.
@@ -44,7 +42,6 @@ package lisp321
 				return true;
 			} else return false;
 		}
-		
 		/**
 		 * 배열을 리스트로 변환합니다. 원본 배열은 수정되지 않습니다.
 		 * @param args 변환할 배열입니다.
@@ -71,7 +68,6 @@ package lisp321
 			}
 			return null;
 		}
-		
 		/**
 		 * 리스트의 마지막 객체쌍을 반환합니다.
 		 * @return cdr이 Pair라면 cdr의 tail을 반환하고 그렇지 않을 경우 자신을 반환합니다.
@@ -83,7 +79,6 @@ package lisp321
 				tail = tail.cdr as Pair;
 			return tail;
 		}
-		
 		/**
 		 * 리스트의 길이를 구합니다.
 		 * @return 리스트의 길이입니다.
@@ -102,7 +97,6 @@ package lisp321
 				return i;
 			} return 0;
 		}
-		
 		/**
 		 * 리스트의 각 항목에 함수를 실행하고 원래 리스트의 각 항목에 대한 함수 결과에 해당하는 항목으로 구성된 새 리스트를 만듭니다.
 		 * @param callback 리스트의 각 항목에 실행할 함수입니다.
@@ -120,7 +114,6 @@ package lisp321
 			}
 			return Pair.list( ary );
 		}
-		
 		/**
 		 * 리스트의 왼쪽부터 함수를 실행해나간 결과를 반환합니다.
 		 * @param callback 리스트의 각 항목끼리 실행할 함수입니다.
@@ -134,7 +127,6 @@ package lisp321
 				return cdr.foldl( callback, callback.apply( thisObject, [ param, car ] ), thisObject );
 			else return callback.apply( thisObject, [ param, car ] );
 		}
-		
 		/**
 		 * 리스트를 배열로 변환합니다.
 		 * @return 리스트의 항목은 배열로 변환하지 않습니다.
@@ -153,7 +145,6 @@ package lisp321
 			array.push( current );
 			return array;
 		}
-		
 		/**
 		 * 문자열로 변환합니다.
 		 * @return < car, cdr > 형식의 문자열을 반환합니다.

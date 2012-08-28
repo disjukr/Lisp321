@@ -6,12 +6,10 @@ package lisp321
 	 */
 	public class Symbol
 	{
-		
 		/**
 		 * @default 심볼의 이름입니다. 
 		 */
 		public var name:String;
-		
 		/**
 		 * 심볼을 생성합니다.
 		 * @param name 심볼의 이름입니다.
@@ -20,7 +18,6 @@ package lisp321
 		{
 			this.name = name;
 		}
-		
 		/**
 		 * 문자열 표현으로 변환합니다.
 		 * @return name 속성을 반환합니다.

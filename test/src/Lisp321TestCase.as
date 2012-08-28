@@ -6,8 +6,10 @@ package
 	import flash.net.URLRequest;
 	import flash.text.TextField;
 	
+	import lisp321.Environment;
 	import lisp321.EvaluationError;
 	import lisp321.Evaluator;
+	import lisp321.Interpreter;
 	import lisp321.Lexer;
 	import lisp321.Pair;
 	import lisp321.Parser;
@@ -136,120 +138,8 @@ package
 			var expected:String;
 			var expectedData:Object;
 			var actualData:Object;
+			var environment:Environment = Environment.toEnvironment( Interpreter.basicForms );
 			var ast:Array = Parser.parse( Lexer.tokenize( input ) );
-			var environment:Object = {
-				"+" : function( a:Object, b:Object ):Number{ return a+b },
-				"-" : function( a:Number, b:Number ):Number{ return a-b },
-				"*" : function( a:Number, b:Number ):Number{ return a*b },
-				"/" : function( a:Number, b:Number ):Number{ return a/b },
-				"<" : function( a:Number, b:Number ):Boolean{ return a<b },
-				">" : function( a:Number, b:Number ):Boolean{ return a>b },
-				"<=" : function( a:Number, b:Number ):Boolean{ return a<=b },
-				">=" : function( a:Number, b:Number ):Boolean{ return a>=b },
-				"=" : function( a:Object, b:Object ):Boolean
-				{
-					if( typeof a != typeof b ) return false;
-					return a==b;
-				},
-				"/=" : function( a:Object, b:Object ):Boolean{ return a!=b },
-				"not" : function( a:Object ):Boolean{ return !a },
-				"#t" : true,
-				"#f" : false,
-				"null?" : function( a:Object ):Boolean{ return a==null },
-				"nil" : null,
-				"car" : function( a:Object ):Object
-				{
-					if( a is Pair )
-						return a.car;
-					else throw new EvaluationError(
-						( a? a.toString() : "nil" )+" is not a cons pair"
-					);
-				},
-				"cdr" : function( a:Object ):Object
-				{
-					if( a is Pair )
-						return a.cdr;
-					else throw new EvaluationError(
-						( a? a.toString() : "nil" )+" is not a cons pair"
-					);
-				},
-				"cons" : function( a:Object, b:Object ):Pair{ return new Pair( a, b ) },
-				"map" : function( a:Function, b:Pair ):Pair{ return b.map( a ) },
-				"foldl" : function( a:Function, b:Object, c:Pair ):Object{ return c.foldl( a, b ) },
-				"string?" : function( a:Object ):Boolean{ return a is String },
-				"string-size" : function( a:Object ):int
-				{
-					if( !( a is String ) )
-						throw new EvaluationError( "not string" );
-					return a.length
-				},
-				"concat" : function( ...args ):String
-				{
-					if( args.length )
-					{
-						for( var i:int=0; i<args.length; ++i )
-							if( !( args[ i ] is String ) )
-								throw new EvaluationError( "not string" );
-						return ( "" ).concat.apply( null, args );
-					} else return ""
-				},
-				"substring" : function( a:Object, b:Object=0, c:Object=null ):String
-				{
-					if( !( a is String ) )
-						throw new EvaluationError( "not string" );
-					if( b != null )
-					{
-						if( Number( b )<0 )
-							b = String( a ).length+Number( b );
-					} else b = String( a ).length;
-					if( c != null )
-					{
-						if( Number( c )<0 )
-							c = String( a ).length+Number( c );
-					} else c = String( a ).length;
-					return String( a ).substring( Number( b ), Number( c ) );
-				},
-				"split-string" : function( a:String, b:Object=null ):Pair
-				{
-					if( b == null )
-					{
-						b = /\s+/g;
-						var c:Array = a.split( b );
-						if( c[ 0 ] == "" )
-							c.shift();
-						if( c[ c.length-1 ] == "" )
-							c.pop();
-						return Pair.list( c );
-					}
-					return Pair.list( a.split( b ) );
-				},
-				"join-string" : function( a:Pair, b:String=null ):String
-				{
-					if( a == null )
-						return "";
-					if( b == null )
-						b = "";
-					return a.toArray().join( b );
-				},
-				"number->string" : function( a:Number ):String
-				{
-					return String( a );
-				},
-				"string->number" : function( a:String ):Number
-				{
-					if( Number( a ).toString() == "NaN" )
-						throw new EvaluationError( "invalid number: \"" + a + "\"" );
-					return Number( a );
-				},
-				"downcase" : function( a:String ):String
-				{
-					return a.toLowerCase();
-				},
-				"upcase" : function( a:String ):String
-				{
-					return a.toUpperCase();
-				}
-			};
 			if( ast.length != output.length )
 				return new TestResult( false, 0, String( output.length ), String( ast.length ) );
 			for( var i:int=0; i<output.length; ++i )
@@ -280,6 +170,8 @@ package
 					actualData = Evaluator.evaluate( ast[ i ], environment );
 				} catch( e:Error )
 				{
+					if( expectedData == null )
+						expectedData = "nil";
 					return new TestResult( false, i, expectedData.toString(), e.message );
 				}
 				if( !TestUtil.checkEqual( expectedData, actualData ) )

@@ -30,7 +30,7 @@ package lisp321
 		{
 			var transformed:Environment = new Environment( parent );
 			for( var item:String in object )
-				transformed.contents[ item ] = object[ item ];
+				transformed.set( item, object[ item ] );
 			return transformed;
 		}
 		/**
@@ -40,7 +40,10 @@ package lisp321
 		 */
 		public function exists( name:String ):Boolean
 		{
-			return contents.hasOwnProperty( name );
+			if( contents[ name ] === undefined )
+				return parent? parent.exists( name ) : false;
+			else
+				return true;
 		}
 		/**
 		 * 속성의 값을 얻어옵니다.
@@ -49,18 +52,20 @@ package lisp321
 		 */
 		public function get( name:String ):Object
 		{
-			if( contents.hasOwnProperty( name ) )
+			if( contents[ name ] === undefined )
+				return parent? parent.get( name ) : null;
+			else
 				return contents[ name ];
-			return parent == null? null : parent.get( name );
 		}
 		/**
 		 * 속성의 값을 설정합니다.
 		 * @param name 속성의 이름입니다.
 		 * @param value 설정할 값입니다.
+		 * @return 설정한 값을 반환합니다.
 		 */
-		public function set( name:String, value:Object ):void
+		public function set( name:String, value:Object ):Object
 		{
-			contents.set( name, value );
+			return contents[ name ] = value;
 		}
 		/**
 		 * 속성을 제거합니다.
@@ -75,9 +80,22 @@ package lisp321
 		 */
 		public function clear():void
 		{
+			var environment:Environment = this;
 			contents = {};
 			contents[ "the-environment" ] =
-				function():Environment{ return this };
+				function():Environment{ return environment };
+		}
+		/**
+		 * 문자열로 변환합니다.
+		 * @return < 속성이름 : 값, ... > 형식의 문자열을 반환합니다.
+		 */
+		public function toString():String
+		{
+			var result:String = "<";
+			for( var item:String in contents )
+				result += item + " : " + contents[ item ] + ", ";
+			result += ">";
+			return result;
 		}
 		
 	}

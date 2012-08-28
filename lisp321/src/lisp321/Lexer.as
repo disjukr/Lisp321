@@ -6,7 +6,6 @@ package lisp321
 	 */
 	public class Lexer
 	{
-		
 		private static var tokenExp:RegExp =
 		new RegExp(
 			// OPEN (\()
@@ -29,14 +28,6 @@ package lisp321
 			
 			, "g"
 		);
-		
-		/**
-		 * Lexer를 생성합니다.
-		 */
-		public function Lexer()
-		{
-		}
-		
 		/**
 		 * 소스코드를 토큰의 리스트로 변환합니다.
 		 * @param code 소스코드입니다.
