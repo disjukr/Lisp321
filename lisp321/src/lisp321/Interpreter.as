@@ -186,6 +186,18 @@ package lisp321
 						Evaluator.toString( b )+" is not symbol"
 					);
 				return ( a as Environment ).exists( ( b as Symbol ).name );
+			},
+			"environment-lookup" : function( a:Object, b:Object ):Object
+			{
+				if( !( b is Symbol ) )
+					throw new EvaluationError(
+						Evaluator.toString( b )+" is not symbol"
+					);
+				return ( a as Environment ).get( ( b as Symbol ).name );
+			},
+			"eval" : function( a:Object, b:Object ):Object
+			{
+				return Evaluator.evaluate( a, b as Environment );
 			}
 		};
 		/**
