@@ -110,6 +110,38 @@ package lisp321
 			//if form is Atom
 			return form;
 		}
+		/**
+		 * form을 문자열로 변환해줍니다.
+		 * @param form 변환할 form입니다.
+		 * @return 변환된 문자열입니다.
+		 */
+		public static function toString( form:Object ):String
+		{
+			if( form == null )
+				return "nil";
+			if( form is Number )
+				return form.toString();
+			if( form is Boolean )
+				return form? "#t" : "#f";
+			if( form is String )
+				return ( form as String );
+			if( form is Symbol )
+				return ( form as Symbol ).name;
+			if( form is Pair )
+			{
+				if( Pair.isList( form as Pair ) )
+				{
+					var list:Array = ( form as Pair ).toArray();
+					for( var item:String in list )
+						list[ item ] = toString( list[ item ] );
+					return "("+list.join( " " )+")";
+				}
+				else return "(cons " +
+					toString( ( form as Pair ).car ) + " " +
+					toString( ( form as Pair ).cdr ) + ")";
+			}
+			return form.toString();
+		}
 		
 	}
 }
