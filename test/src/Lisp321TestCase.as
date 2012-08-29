@@ -11,10 +11,8 @@ package
 	import lisp321.Evaluator;
 	import lisp321.Interpreter;
 	import lisp321.Lexer;
-	import lisp321.Pair;
 	import lisp321.Parser;
 	import lisp321.ParsingError;
-	import lisp321.Symbol;
 	import lisp321.Token;
 	
 	public class Lisp321TestCase extends Sprite
