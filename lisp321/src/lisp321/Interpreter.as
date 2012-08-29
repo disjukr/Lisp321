@@ -173,6 +173,18 @@ package lisp321
 			"upcase" : function( a:Object ):String
 			{
 				return ( a as String ).toUpperCase();
+			},
+			"environment?" : function( a:Object ):Boolean
+			{
+				return a is Environment;
+			},
+			"environment-bound?" : function( a:Object, b:Object ):Boolean
+			{
+				if( !( b is Symbol ) )
+					throw new EvaluationError(
+						( b? b.toString() : "nil" )+" is not symbol"
+					);
+				return ( a as Environment ).exists( ( b as Symbol ).name );
 			}
 		};
 		/**
