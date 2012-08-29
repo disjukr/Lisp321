@@ -101,7 +101,7 @@ package lisp321
 				func = evaluate( first, environment ) as Function;
 				if( !( func is Function ) )
 					throw new EvaluationError(
-						( first==null? "nil" : first ) + " is not applicable"
+						toString( first ) + " is not applicable"
 					);
 				for( var item:String in list )
 					list[ item] = evaluate( list[ item ], environment );
@@ -124,7 +124,7 @@ package lisp321
 			if( form is Boolean )
 				return form? "#t" : "#f";
 			if( form is String )
-				return ( form as String );
+				return "\"" + form + "\"";
 			if( form is Symbol )
 				return ( form as Symbol ).name;
 			if( form is Pair )

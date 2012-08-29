@@ -72,7 +72,7 @@ package lisp321
 				if( a is Pair )
 					return a.car;
 				else throw new EvaluationError(
-					( a? a.toString() : "nil" )+" is not a cons pair"
+					Evaluator.toString( a )+" is not a cons pair"
 				);
 			},
 			"cdr" : function( a:Object ):Object
@@ -80,7 +80,7 @@ package lisp321
 				if( a is Pair )
 					return a.cdr;
 				else throw new EvaluationError(
-					( a? a.toString() : "nil" )+" is not a cons pair"
+					Evaluator.toString( a )+" is not a cons pair"
 				);
 			},
 			"map" : function( a:Object, b:Object ):Pair
@@ -162,7 +162,8 @@ package lisp321
 			{
 				if( Number( a as String ).toString() == "NaN" )
 					throw new EvaluationError(
-						"invalid number: \"" + a + "\""
+						"invalid number: " +
+						Evaluator.toString( a )
 					);
 				return Number( a as String );
 			},
@@ -182,7 +183,7 @@ package lisp321
 			{
 				if( !( b is Symbol ) )
 					throw new EvaluationError(
-						( b? b.toString() : "nil" )+" is not symbol"
+						Evaluator.toString( b )+" is not symbol"
 					);
 				return ( a as Environment ).exists( ( b as Symbol ).name );
 			}
