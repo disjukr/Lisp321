@@ -195,6 +195,10 @@ package lisp321
 					);
 				return ( a as Environment ).get( ( b as Symbol ).name );
 			},
+			"environment-has-parent?" : function( a:Object ):Boolean
+			{
+				return ( a as Environment ).parent != null;
+			},
 			"eval" : function( a:Object, b:Object ):Object
 			{
 				return Evaluator.evaluate( a, b as Environment );
