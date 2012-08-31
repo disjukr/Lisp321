@@ -36,10 +36,13 @@ package lisp321
 		/**
 		 * 속성이 존재하는지 여부를 반환합니다.
 		 * @param name 속성의 이름입니다.
+		 * @param inLocal false라면 속성이 존재하지 않을 시에 부모가 갖고있는 속성도 찾습니다.
 		 * @return 해당속성이 존재하면 true를 반환합니다.
 		 */
-		public function exists( name:String ):Boolean
+		public function exists( name:String, inLocal:Boolean=false ):Boolean
 		{
+			if( inLocal )
+				return contents[ name ] !== undefined;
 			if( contents[ name ] === undefined )
 				return parent? parent.exists( name ) : false;
 			else
