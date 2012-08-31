@@ -199,6 +199,10 @@ package lisp321
 			{
 				return ( a as Environment ).parent != null;
 			},
+			"environment-parent" : function( a:Object ):Environment
+			{
+				return ( a as Environment ).parent;
+			},
 			"eval" : function( a:Object, b:Object ):Object
 			{
 				return Evaluator.evaluate( a, b as Environment );
