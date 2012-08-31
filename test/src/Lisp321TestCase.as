@@ -132,7 +132,11 @@ package
 		{
 			var input:String = cases.files[ $input ].content;
 			var output:Array = String( cases.files[ $output ].content ).split( "\n" );
-			output.length -= 1; // trim last \n
+			var _output:Array = [];
+			for( var i:int=0; i<output.length; ++i )
+				if( output[ i ] != "" )
+					_output.push( output[ i ] );
+			output = _output;
 			var expected:String;
 			var expectedData:Object;
 			var actualData:Object;
@@ -140,7 +144,7 @@ package
 			var ast:Array = Parser.parse( Lexer.tokenize( input ) );
 			if( ast.length != output.length )
 				return new TestResult( false, 0, String( output.length ), String( ast.length ) );
-			for( var i:int=0; i<output.length; ++i )
+			for( i=0; i<output.length; ++i )
 			{
 				actualData = ast[ i ];
 				expected = output[ i ];
