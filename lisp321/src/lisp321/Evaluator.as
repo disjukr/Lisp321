@@ -28,11 +28,14 @@ package lisp321
 			"let" : function( environment:Environment, params:Pair, ...args ):Object
 			{
 				var _environment:Environment = new Environment( environment );
-				var _params:Array = params.toArray();
-				for each( var item:Pair in _params )
+				if( params )
 				{
-					var _item:Array = item.toArray();
-					_environment.set( _item[ 0 ].name, evaluate( _item[ 1 ], environment ) );
+					var _params:Array = params.toArray();
+					for each( var item:Pair in _params )
+					{
+						var _item:Array = item.toArray();
+						_environment.set( _item[ 0 ].name, evaluate( _item[ 1 ], environment ) );
+					}
 				}
 				for each( var form:Object in args )
 					form = evaluate( form, _environment );
@@ -41,11 +44,14 @@ package lisp321
 			"let*" : function( environment:Environment, params:Pair, ...args ):Object
 			{
 				var _environment:Environment = new Environment( environment );
-				var _params:Array = params.toArray();
-				for each( var item:Pair in _params )
+				if( params )
 				{
-					var _item:Array = item.toArray();
-					_environment.set( _item[ 0 ].name, evaluate( _item[ 1 ], _environment ) );
+					var _params:Array = params.toArray();
+					for each( var item:Pair in _params )
+					{
+						var _item:Array = item.toArray();
+						_environment.set( _item[ 0 ].name, evaluate( _item[ 1 ], _environment ) );
+					}
 				}
 				for each( var form:Object in args )
 				form = evaluate( form, _environment );
