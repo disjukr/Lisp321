@@ -31,11 +31,12 @@ package lisp321
 			},
 			"set!" : function( environment:Environment, symbol:Symbol, value:Object ):Object
 			{
-				while( environment )
-					if( environment.exists( symbol.name ) )
+				var _environment:Environment = environment;
+				while( _environment )
+					if( _environment.exists( symbol.name, true ) )
 						break;
-					else environment = environment.parent;
-				return environment.set( symbol.name, evaluate( value, environment ) );
+					else _environment = _environment.parent;
+				return _environment.set( symbol.name, evaluate( value, environment ) );
 			},
 			"and" : function( environment:Environment, a:Object, b:Object ):Boolean
 			{
