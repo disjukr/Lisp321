@@ -171,15 +171,7 @@ package
 					expected = expected.slice( 2 );
 					expectedData = Parser.parse( Lexer.tokenize( expected ) )[ 0 ];
 				}
-				try
-				{
-					actualData = Evaluator.evaluate( ast[ i ], environment );
-				} catch( e:Error )
-				{
-					if( expectedData == null )
-						expectedData = "nil";
-					return new TestResult( false, i, expectedData.toString(), e.message );
-				}
+				actualData = Evaluator.evaluate( ast[ i ], environment );
 				if( !TestUtil.checkEqual( expectedData, actualData ) )
 					return new TestResult(
 						false,
