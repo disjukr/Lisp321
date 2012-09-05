@@ -6,8 +6,6 @@ package lisp321
 	 */
 	public class Evaluator
 	{
-		public static var count:int = 0;
-		
 		private static var specialForms:Object = {
 			"define" : function( symbol:Symbol, value:Object ):Function
 			{
@@ -145,7 +143,6 @@ package lisp321
 		 */
 		public static function analyze( form:Object ):Function
 		{
-			++count;
 			if( form is Symbol )
 			{
 				var name:String = Symbol( form ).name;
