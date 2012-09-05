@@ -13,6 +13,7 @@ package lisp321
 			},
 			"lambda" : function( environment:Environment, params:Pair, body:Object ):Function
 			{
+				var executeBody:Function = analyze( body );
 				return function( ...args ):Object
 				{
 					var _environment:Environment = new Environment( environment );
@@ -22,7 +23,7 @@ package lisp321
 						for( var i:int=0; i<_params.length; ++i )
 							_environment.set( _params[ i ].name, args[ i ] );
 					}
-					return evaluate( body, _environment );
+					return executeBody( _environment );
 				}
 			},
 			"let" : function( environment:Environment, params:Pair, ...args ):Object
@@ -102,6 +103,63 @@ package lisp321
 			}
 		};
 		/**
+		 * 값에 대한 분석을 수행합니다.
+		 * @param form 분석을 수행할 값입니다.
+		 * @return function( environment:Environment ):Object{ ... } 형식의 값을 반환합니다.
+		 */
+		public static function analyze( form:Object ):Function
+		{
+			if( form is Symbol )
+			{
+				var name:String = Symbol( form ).name;
+				return function( environment:Environment ):Object
+				{
+					if( environment.exists( name ) )
+						return environment.get( name );
+					else throw new EvaluationError( name + " is undefined" );
+				}
+			} else if( form is Pair ) {
+				var first:Object = form.car;
+				if( first is Symbol )
+				{
+					var func:Function = specialForms[ first.name ];
+					if( func != null )
+					{
+						var params:Array;
+						if( form.cdr is Pair )
+							params = form.cdr.toArray();
+						else
+							params = [];
+						return function( environment:Environment ):Object
+						{
+							var args:Array = [ environment ].concat( params );
+							return func.apply( null, args );
+						}
+					}
+				}
+				var analyzedParams:Array = [];
+				for each( var param:Object in form.toArray() )
+					analyzedParams.push( analyze( param ) );
+				return function( environment:Environment ):Object
+				{
+					var func:Object = analyzedParams[ 0 ]( environment );
+					if( !( func is Function ) )
+						throw new EvaluationError(
+							toString( first ) + " is not applicable"
+						);
+					var args:Array = [];
+					for each( var param:Function in analyzedParams.slice( 1 ) )
+						args.push( param( environment ) );
+					return func.apply( null, args );
+				}
+			} else {
+				return function( environment:Environment ):Object
+				{
+					return form;
+				}
+			}
+		}
+		/**
 		 * 값에 대한 평가를 수행합니다.
 		 * @param form 평가를 수행할 값입니다.
 		 * @param environment symbol 들이 들어있는 환경입니다.
@@ -109,43 +167,7 @@ package lisp321
 		 */
 		public static function evaluate( form:Object, environment:Environment ):Object
 		{
-			if( form is Symbol )
-			{
-				var name:String = Symbol( form ).name;
-				if( environment.exists( name ) )
-					return environment.get( name );
-				else throw new EvaluationError( name + " is undefined" );
-			}
-			if( form is Pair )
-			{
-				var list:Array;
-				if( form.cdr is Pair )
-					list = form.cdr.toArray();
-				else
-					list = [];
-				var first:Object;
-				var func:Function;
-				first = form.car;
-				if( first is Symbol )
-				{
-					func = specialForms[ Symbol( first ).name ];
-					if( func != null )
-					{
-						list.unshift( environment );
-						return func.apply( null, list );
-					}
-				}
-				func = evaluate( first, environment ) as Function;
-				if( !( func is Function ) )
-					throw new EvaluationError(
-						toString( first ) + " is not applicable"
-					);
-				for( var item:String in list )
-					list[ item] = evaluate( list[ item ], environment );
-				return func.apply( null, list );
-			}
-			//if form is Atom
-			return form;
+			return analyze( form )( environment );
 		}
 		/**
 		 * form을 문자열로 변환해줍니다.
