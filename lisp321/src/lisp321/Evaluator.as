@@ -6,100 +6,136 @@ package lisp321
 	 */
 	public class Evaluator
 	{
+		public static var count:int = 0;
+		
 		private static var specialForms:Object = {
-			"define" : function( environment:Environment, symbol:Symbol, value:Object ):void
+			"define" : function( symbol:Symbol, value:Object ):Function
 			{
-				environment.set( symbol.name, evaluate( value, environment ) );
+				var executeValue:Function = analyze( value );
+				return function( environment:Environment ):void
+				{
+					environment.set( symbol.name, executeValue( environment ) );
+				}
 			},
-			"lambda" : function( environment:Environment, params:Pair, body:Object ):Function
+			"lambda" : function( params:Pair, body:Object ):Function
 			{
 				var executeBody:Function = analyze( body );
-				return function( ...args ):Object
+				return function( environment:Environment ):Function
+				{
+					return function( ...args ):Object
+					{
+						var _environment:Environment = new Environment( environment );
+						if( params )
+						{
+							var _params:Array = params.toArray();
+							for( var i:int=0; i<_params.length; ++i )
+								_environment.set( _params[ i ].name, args[ i ] );
+						}
+						return executeBody( _environment );
+					}
+				}
+			},
+			"let" : function( params:Pair, ...args ):Function
+			{
+				return function( environment:Environment ):Object
 				{
 					var _environment:Environment = new Environment( environment );
 					if( params )
 					{
 						var _params:Array = params.toArray();
-						for( var i:int=0; i<_params.length; ++i )
-							_environment.set( _params[ i ].name, args[ i ] );
-					}
-					return executeBody( _environment );
-				}
-			},
-			"let" : function( environment:Environment, params:Pair, ...args ):Object
-			{
-				var _environment:Environment = new Environment( environment );
-				if( params )
-				{
-					var _params:Array = params.toArray();
-					for each( var item:Pair in _params )
-					{
-						var _item:Array = item.toArray();
-						_environment.set( _item[ 0 ].name, evaluate( _item[ 1 ], environment ) );
-					}
-				}
-				for each( var form:Object in args )
-					form = evaluate( form, _environment );
-				return form;
-			},
-			"let*" : function( environment:Environment, params:Pair, ...args ):Object
-			{
-				var _environment:Environment = new Environment( environment );
-				if( params )
-				{
-					var _params:Array = params.toArray();
-					for each( var item:Pair in _params )
-					{
-						var _item:Array = item.toArray();
-						_environment.set( _item[ 0 ].name, evaluate( _item[ 1 ], _environment ) );
-					}
-				}
-				for each( var form:Object in args )
-				form = evaluate( form, _environment );
-				return form;
-			},
-			"if" : function( environment:Environment, condition:Object, consequent:Object, alternative:Object ):Object
-			{
-				return evaluate( evaluate( condition, environment )? consequent : alternative, environment );
-			},
-			"set!" : function( environment:Environment, symbol:Symbol, value:Object ):Object
-			{
-				var _environment:Environment = environment;
-				while( _environment )
-					if( _environment.exists( symbol.name, true ) )
-						break;
-					else _environment = _environment.parent;
-				return _environment.set( symbol.name, evaluate( value, environment ) );
-			},
-			"and" : function( environment:Environment, a:Object, b:Object ):Boolean
-			{
-				return evaluate( a, environment ) && evaluate( b,environment );
-			},
-			"or" : function( environment:Environment, a:Object, b:Object ):Boolean
-			{
-				return evaluate( a, environment ) || evaluate( b, environment );
-			},
-			"quote" : function( environment:Environment, object:Object ):Object
-			{
-				return object;
-			},
-			"list" : function( environment:Environment, ...args ):Pair
-			{
-				var list:Pair = new Pair;
-				var current:Pair = list;
-				if( args.length )
-				{
-					for( var i:int=0; i<args.length; ++i )
-					{
-						current.car = evaluate( args[ i ], environment );
-						if( i<args.length-1 )
+						for each( var item:Pair in _params )
 						{
-							current.cdr = new Pair;
-							current = current.cdr as Pair;
+							var _item:Array = item.toArray();
+							_environment.set( _item[ 0 ].name, evaluate( _item[ 1 ], environment ) );
 						}
 					}
-					return list;
-				} else return null;
+					for each( var form:Object in args )
+						form = evaluate( form, _environment );
+					return form;
+				}
+			},
+			"let*" : function( params:Pair, ...args ):Function
+			{
+				return function( environment:Environment ):Object
+				{
+					var _environment:Environment = new Environment( environment );
+					if( params )
+					{
+						var _params:Array = params.toArray();
+						for each( var item:Pair in _params )
+						{
+							var _item:Array = item.toArray();
+							_environment.set( _item[ 0 ].name, evaluate( _item[ 1 ], _environment ) );
+						}
+					}
+					for each( var form:Object in args )
+					form = evaluate( form, _environment );
+					return form;
+				}
+			},
+			"if" : function( condition:Object, consequent:Object, alternative:Object ):Function
+			{
+				var executeCondition:Function = analyze( condition );
+				var executeConsequent:Function = analyze( consequent );
+				var executeAlternative:Function = analyze( alternative );
+				return function( environment:Environment ):Object
+				{
+					return ( executeCondition( environment )? executeConsequent : executeAlternative)( environment );
+				}
+			},
+			"set!" : function( symbol:Symbol, value:Object ):Function
+			{
+				return function( environment:Environment ):Object
+				{
+					var _environment:Environment = environment;
+					while( _environment )
+						if( _environment.exists( symbol.name, true ) )
+							break;
+						else _environment = _environment.parent;
+					return _environment.set( symbol.name, evaluate( value, environment ) );
+				}
+			},
+			"and" : function( a:Object, b:Object ):Function
+			{
+				return function( environment:Environment ):Boolean
+				{
+					return evaluate( a, environment ) && evaluate( b,environment );
+				}
+			},
+			"or" : function( a:Object, b:Object ):Function
+			{
+				return function( environment:Environment ):Boolean
+				{
+					return evaluate( a, environment ) || evaluate( b, environment );
+				}
+			},
+			"quote" : function( object:Object ):Function
+			{
+				return function( environment:Environment ):Object
+				{
+					return object;
+				}
+			},
+			"list" : function( ...args ):Function
+			{
+				return function( environment:Environment ):Pair
+				{
+					var list:Pair = new Pair;
+					var current:Pair = list;
+					if( args.length )
+					{
+						for( var i:int=0; i<args.length; ++i )
+						{
+							current.car = evaluate( args[ i ], environment );
+							if( i<args.length-1 )
+							{
+								current.cdr = new Pair;
+								current = current.cdr as Pair;
+							}
+						}
+						return list;
+					} else return null;
+				}
 			}
 		};
 		/**
@@ -109,6 +145,7 @@ package lisp321
 		 */
 		public static function analyze( form:Object ):Function
 		{
+			++count;
 			if( form is Symbol )
 			{
 				var name:String = Symbol( form ).name;
@@ -122,19 +159,15 @@ package lisp321
 				var first:Object = form.car;
 				if( first is Symbol )
 				{
-					var func:Function = specialForms[ first.name ];
-					if( func != null )
+					var analyzeSpecialForm:Function = specialForms[ first.name ];
+					if( analyzeSpecialForm != null )
 					{
 						var params:Array;
 						if( form.cdr is Pair )
 							params = form.cdr.toArray();
 						else
 							params = [];
-						return function( environment:Environment ):Object
-						{
-							var args:Array = [ environment ].concat( params );
-							return func.apply( null, args );
-						}
+						return analyzeSpecialForm.apply( null, params );
 					}
 				}
 				var analyzedParams:Array = [];
