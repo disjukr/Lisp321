@@ -18,56 +18,50 @@ package lisp321
 			"lambda" : function( params:Pair, body:Object ):Function
 			{
 				var executeBody:Function = analyze( body );
+				var _params:Array = params? params.toArray() : [];
 				return function( environment:Environment ):Function
 				{
 					return function( ...args ):Object
 					{
 						var _environment:Environment = new Environment( environment );
-						if( params )
-						{
-							var _params:Array = params.toArray();
-							for( var i:int=0; i<_params.length; ++i )
-								_environment.set( _params[ i ].name, args[ i ] );
-						}
+						for( var i:int=0; i<_params.length; ++i )
+							_environment.set( _params[ i ].name, args[ i ] );
 						return executeBody( _environment );
 					}
 				}
 			},
 			"let" : function( params:Pair, ...args ):Function
 			{
+				var _params:Array = params? params.toArray() : [];
+				var analyzedParams:Object = {};
+				for each( var param:Pair in _params )
+				analyzedParams[ param.car.name ] = analyze( param.cdr.car );
+				var analyzedForms:Array = [];
+				for each( var form:Object in args )
+					analyzedForms.push( analyze( form ) );
 				return function( environment:Environment ):Object
 				{
 					var _environment:Environment = new Environment( environment );
-					if( params )
-					{
-						var _params:Array = params.toArray();
-						for each( var item:Pair in _params )
-						{
-							var _item:Array = item.toArray();
-							_environment.set( _item[ 0 ].name, evaluate( _item[ 1 ], environment ) );
-						}
-					}
-					for each( var form:Object in args )
-						form = evaluate( form, _environment );
+					for( var param:String in analyzedParams )
+						_environment.set( param, analyzedParams[ param ]( environment ) );
+					for each( var form:Object in analyzedForms )
+						form = form( _environment );
 					return form;
 				}
 			},
 			"let*" : function( params:Pair, ...args ):Function
 			{
+				var _params:Array = params? params.toArray() : [];
+				var analyzedForms:Array = [];
+				for each( var form:Object in args )
+				analyzedForms.push( analyze( form ) );
 				return function( environment:Environment ):Object
 				{
 					var _environment:Environment = new Environment( environment );
-					if( params )
-					{
-						var _params:Array = params.toArray();
-						for each( var item:Pair in _params )
-						{
-							var _item:Array = item.toArray();
-							_environment.set( _item[ 0 ].name, evaluate( _item[ 1 ], _environment ) );
-						}
-					}
-					for each( var form:Object in args )
-					form = evaluate( form, _environment );
+					for each( var param:Pair in _params )
+						_environment.set( param.car.name, evaluate( param.cdr.car, _environment ) );
+					for each( var form:Object in analyzedForms )
+						form = form( _environment );
 					return form;
 				}
 			},
@@ -78,11 +72,13 @@ package lisp321
 				var executeAlternative:Function = analyze( alternative );
 				return function( environment:Environment ):Object
 				{
-					return ( executeCondition( environment )? executeConsequent : executeAlternative)( environment );
+					return ( executeCondition( environment )?
+						executeConsequent : executeAlternative )( environment );
 				}
 			},
 			"set!" : function( symbol:Symbol, value:Object ):Function
 			{
+				var executeValue:Function = analyze( value );
 				return function( environment:Environment ):Object
 				{
 					var _environment:Environment = environment;
@@ -90,21 +86,25 @@ package lisp321
 						if( _environment.exists( symbol.name, true ) )
 							break;
 						else _environment = _environment.parent;
-					return _environment.set( symbol.name, evaluate( value, environment ) );
+					return _environment.set( symbol.name, executeValue( environment ) );
 				}
 			},
 			"and" : function( a:Object, b:Object ):Function
 			{
+				var executeA:Function = analyze( a );
+				var executeB:Function = analyze( b );
 				return function( environment:Environment ):Boolean
 				{
-					return evaluate( a, environment ) && evaluate( b,environment );
+					return executeA( environment ) && executeB( environment );
 				}
 			},
 			"or" : function( a:Object, b:Object ):Function
 			{
+				var executeA:Function = analyze( a );
+				var executeB:Function = analyze( b );
 				return function( environment:Environment ):Boolean
 				{
-					return evaluate( a, environment ) || evaluate( b, environment );
+					return executeA( environment ) || executeB( environment );
 				}
 			},
 			"quote" : function( object:Object ):Function
@@ -116,6 +116,9 @@ package lisp321
 			},
 			"list" : function( ...args ):Function
 			{
+				var analyzedArgs:Array = [];
+				for each( var arg:Object in args )
+					analyzedArgs.push( analyze( arg ) );
 				return function( environment:Environment ):Pair
 				{
 					var list:Pair = new Pair;
@@ -124,7 +127,7 @@ package lisp321
 					{
 						for( var i:int=0; i<args.length; ++i )
 						{
-							current.car = evaluate( args[ i ], environment );
+							current.car = analyzedArgs[ i ]( environment );
 							if( i<args.length-1 )
 							{
 								current.cdr = new Pair;
