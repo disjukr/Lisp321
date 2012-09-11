@@ -147,7 +147,7 @@ package lisp321
 		}
 		/**
 		 * 문자열로 변환합니다.
-		 * @return < car, cdr > 형식의 문자열을 반환합니다.
+		 * @return &lt;car, cdr&gt; 형식의 문자열을 반환합니다.
 		 */
 		public function toString():String
 		{

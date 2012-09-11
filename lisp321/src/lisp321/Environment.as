@@ -90,7 +90,7 @@ package lisp321
 		}
 		/**
 		 * 문자열로 변환합니다.
-		 * @return < 속성이름 : 값, ... > 형식의 문자열을 반환합니다.
+		 * @return 속성이름 : &lt;값, ...&gt; 형식의 문자열을 반환합니다.
 		 */
 		public function toString():String
 		{
